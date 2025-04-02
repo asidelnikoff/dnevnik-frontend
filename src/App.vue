@@ -4,3 +4,9 @@
 <template>
   <RouterView />
 </template>
+
+<style lang='scss'>
+button {
+  cursor: pointer;
+}
+</style>
