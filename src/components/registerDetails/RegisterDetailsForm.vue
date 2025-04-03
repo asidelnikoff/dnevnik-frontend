@@ -64,7 +64,7 @@ const subjectSelectValues = [
     value: 'math',
     label: 'Математика',
   },
-]
+];
 
 //
 // Form schema and validations
