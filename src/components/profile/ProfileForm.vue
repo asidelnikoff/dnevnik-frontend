@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import router from '@/router'
-
-import { useAuthStore } from '@/stores/auth'
-
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -17,31 +13,27 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-//
-// Form schema and validations
-//
+const emit = defineEmits(['submit'])
 
 const formSchema = toTypedSchema(z.object({
-  login: z.string({ message: 'Введите логин'}),
-  password: z.string({ message: 'Введите пароль'}),
-  passwordConfirm: z.string({ message: 'Повторите пароль'}),
+  lastName: z.string({ message: 'Введите фамилию'}),
+  name: z.string({ message: 'Введите имя'}),
+  middleName: z.string().optional(),
+  login: z.string().optional(),
+  password: z.string().optional(),
+  passwordConfirm: z.string().optional(),
 })
 .refine((data) => data.password === data.passwordConfirm, {
   message: "Пароли не совпадают",
     path: ["passwordConfirm"],
 }))
+
 const form = useForm({
   validationSchema: formSchema,
 })
 
-//
-// Submit action
-//
-
-const authStore = useAuthStore()
 const onSubmit = form.handleSubmit((values) => {
-  authStore.setRegisterData(values)
-  router.push({ name: 'registerDetails'})
+  emit('submit', values)
 })
 </script>
 
@@ -50,6 +42,56 @@ const onSubmit = form.handleSubmit((values) => {
     class="flex flex-col gap-3"
     @submit="onSubmit"
   >
+    <div class="flex gap-5">
+      <FormField
+        v-slot="{ componentField }"
+        name="lastName"
+      >
+        <FormItem>
+          <FormLabel><span>Фамилия<sup>*</sup></span></FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              v-bind="componentField"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField
+        v-slot="{ componentField }"
+        name="name"
+      >
+        <FormItem>
+          <FormLabel><span>Имя<sup>*</sup></span></FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              v-bind="componentField"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField
+        v-slot="{ componentField }"
+        name="middleName"
+      >
+        <FormItem>
+          <FormLabel>Отчество</FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              v-bind="componentField"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+    </div>
+
     <FormField
       v-slot="{ componentField }"
       name="login"
@@ -99,10 +141,10 @@ const onSubmit = form.handleSubmit((values) => {
     </FormField>
 
     <Button
-      class="w-100 mt-15"
+      class="mt-15 ml-auto"
       type="submit"
     >
-      Зарегистрироваться
+      Сохранить
     </Button>
   </form>
 </template>
