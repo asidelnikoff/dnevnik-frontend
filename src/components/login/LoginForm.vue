@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import router from '@/router'
+
+import { useAuthStore } from '@/stores/auth'
+
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -13,19 +17,28 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-const emit = defineEmits(['submit'])
+//
+// Form schema and validations
+//
 
 const formSchema = toTypedSchema(z.object({
   login: z.string({ message: 'Введите логин'}),
   password: z.string({ message: 'Введите пароль'}),
 }))
-
 const form = useForm({
   validationSchema: formSchema,
 })
 
+//
+// Submit action
+//
+
+const authStore = useAuthStore()
 const onSubmit = form.handleSubmit((values) => {
-  emit('submit', values)
+  if (authStore.login()) {
+    console.log(values)
+    router.replace({name: 'home'})
+  }
 })
 </script>
 

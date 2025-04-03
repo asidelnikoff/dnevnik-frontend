@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import RegisterForm from '@/components/Register/RegisterForm.vue';
-
-const onSubmit = (values: object) => {
-  console.log(values)
-}
+import RegisterForm from '@/components/register/RegisterForm.vue';
 </script>
 
 <template>
@@ -11,6 +7,6 @@ const onSubmit = (values: object) => {
     <h2 class="text-3xl font-bold">
       Добро пожаловать!
     </h2>
-    <RegisterForm @submit="onSubmit" />
+    <RegisterForm />
   </div>
 </template>
