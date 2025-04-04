@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useAuthStore } from "@/stores/auth";
-
 import { Home, Users, UsersRound, Calendar, UserPen, LogOut } from "lucide-vue-next"
 
 import {
