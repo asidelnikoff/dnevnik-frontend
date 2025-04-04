@@ -28,5 +28,16 @@ export const useStudentsStore = defineStore('students', () => {
     return true 
   }
 
-  return { students, getStudents}
+  function addStudent (studentData: Student): boolean {
+    students.value.push(studentData)
+
+    return true
+  }
+
+  return {
+    students, 
+
+    getStudents,
+    addStudent,
+  }
 })

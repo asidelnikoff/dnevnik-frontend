@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Home, Users, UsersRound, Calendar, UserPen, LogOut } from "lucide-vue-next"
+
 import {
   Sidebar,
   SidebarContent,
@@ -31,8 +32,9 @@ const contentItems = [
     title: "Сводное",
     routeName: 'schedule',
     icon: Calendar,
-  },
+  }
 ];
+
 const footerItems = [
   {
     title: "Профиль",

@@ -17,12 +17,14 @@ const authStore = useAuthStore()
       v-if="true"
       class="w-fit mt-3 ml-auto"
     >
-      <Button
-        v-if="authStore.isHeadteacher"
-        variant="outline"
-      >
-        Добавить ученика
-      </Button>
+      <RouterLink :to="{name: 'registerStudent'}">
+        <Button
+          v-if="authStore.isHeadteacher"
+          variant="outline"
+        >
+          Добавить ученика
+        </Button>
+      </RouterLink>
     </div>
   </div>
 </template>

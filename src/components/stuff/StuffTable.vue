@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { onBeforeMount } from 'vue'
 
-import { useStuffStore } from '@/stores/sutff'
+import { useStuffStore } from '@/stores/stuff'
 
 import type { Stuff } from '@/api/types/stuff'
 

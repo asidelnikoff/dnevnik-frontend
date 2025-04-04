@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import router from '@/router'
 
-import { useAuthStore } from '@/stores/auth'
-
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -24,59 +22,36 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
+import { useStudentsStore } from '@/stores/students'
 
 //
 // Form select values
 //
 
-const roleSelectValues = [
-  {
-    value: 'student',
-    label: 'Ученик',
-  },
-  {
-    value: 'headteacher',
-    label: 'Заведующий учебной частью',
-  },
-  {
-    value: 'teacher',
-    label: 'Учитель',
-  },
-]
-
 const classSelectValues = [
   {
-    value: '1a',
+    value: '1А',
     label: '1А',
   },
   {
-    value: '10b',
+    value: '10Б',
     label: '10Б',
   },
 ]
-
-const subjectSelectValues = [
-  {
-    value: 'russian',
-    label: 'Русский язык',
-  },
-  {
-    value: 'math',
-    label: 'Математика',
-  },
-];
 
 //
 // Form schema and validations
 //
 
 const formSchema = toTypedSchema(z.object({
+  login: z.string({ message: 'Введите логин'}),
+  password: z.string({ message: 'Введите пароль'}),
+
   name: z.string({ message: 'Введите фамилию'}),
   lastName: z.string({ message: 'Введите имя'}),
   middleName: z.string().optional(),
-  position: z.string({ message: 'Выберите должность'}).default(roleSelectValues[0].value),
+
   class: z.string({ message: 'Выберите класс'}).default(classSelectValues[0].value),
-  subject: z.string({ message: 'Выберите предмет'}).default(subjectSelectValues[0].value),
 }))
 const form = useForm({
   validationSchema: formSchema,
@@ -87,10 +62,13 @@ const form = useForm({
 // Submit action
 //
 
-const authStore = useAuthStore()
+const studentsStore = useStudentsStore()
 const onSubmit = form.handleSubmit((values) => {
-  if (authStore.register()) {
-    router.replace({ name: 'home' })
+  if (studentsStore.addStudent({
+    ...values,
+    id: '2'
+  })) {
+    router.replace({ name: 'students' })
   }
   console.log(values)
 })
@@ -101,6 +79,39 @@ const onSubmit = form.handleSubmit((values) => {
     class="flex flex-col gap-3"
     @submit="onSubmit"
   >
+    <div class="flex gap-5">
+      <FormField
+        v-slot="{ componentField }"
+        name="login"
+      >
+        <FormItem>
+          <FormLabel><span>Логин<sup>*</sup></span></FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              v-bind="componentField"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField
+        v-slot="{ componentField }"
+        name="password"
+      >
+        <FormItem>
+          <FormLabel><span>Пароль<sup>*</sup></span></FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              v-bind="componentField"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+    </div>
     <div class="flex gap-5">
       <FormField
         v-slot="{ componentField }"
@@ -154,36 +165,6 @@ const onSubmit = form.handleSubmit((values) => {
     <div class="flex gap-5">
       <FormField
         v-slot="{ componentField }"
-        name="position"
-      >
-        <FormItem>
-          <FormLabel><span>Должность<sup>*</sup></span></FormLabel>
-
-          <Select v-bind="componentField">
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem
-                  v-for="{ value, label} in roleSelectValues"
-                  :key="value"
-                  :value="value"
-                >
-                  {{ label }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-
-      <FormField
-        v-if="form.controlledValues.value.position === 'student'"
-        v-slot="{ componentField }"
         name="class"
       >
         <FormItem>
@@ -210,43 +191,13 @@ const onSubmit = form.handleSubmit((values) => {
           <FormMessage />
         </FormItem>
       </FormField>
-
-      <FormField
-        v-if="form.controlledValues.value.position !== 'student'"
-        v-slot="{ componentField }"
-        name="subject"
-      >
-        <FormItem>
-          <FormLabel><span>Предмет<sup>*</sup></span></FormLabel>
-
-          <Select v-bind="componentField">
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem
-                  v-for="{ value, label} in subjectSelectValues"
-                  :key="value"
-                  :value="value"
-                >
-                  {{ label }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      </FormField>
     </div>
 
     <Button
       class="mt-15 ml-auto"
       type="submit"
     >
-      Сохранить
+      Создать
     </Button>
   </form>
 </template>
