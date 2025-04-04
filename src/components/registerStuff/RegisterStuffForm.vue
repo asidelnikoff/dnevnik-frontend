@@ -34,10 +34,6 @@ const roleSelectValues = [
     value: 'Учитель',
     label: 'Учитель',
   },
-  {
-    value: 'Заведующий учебной частью',
-    label: 'Заведующий учебной частью',
-  },
 ]
 
 const subjectSelectValues = [

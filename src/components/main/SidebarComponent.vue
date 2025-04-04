@@ -30,16 +30,12 @@ const contentItems = [
     routeName: 'stuff',
     icon: UsersRound,
   },
-];
-
-const authStore = useAuthStore()
-if (!authStore.isHeadteacher) {
-  contentItems.push({
+  {
     title: "Сводное",
     routeName: 'schedule',
     icon: Calendar,
-  })
-}
+  }
+];
 
 const footerItems = [
   {
