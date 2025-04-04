@@ -12,13 +12,15 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useAuthStore } from '@/stores/auth'
 
 const emit = defineEmits(['submit'])
 
+const authStore = useAuthStore()
 const formSchema = toTypedSchema(z.object({
-  lastName: z.string({ message: 'Введите фамилию'}),
-  name: z.string({ message: 'Введите имя'}),
-  middleName: z.string().optional(),
+  lastName: z.string().optional().default(authStore.getLastName),
+  name: z.string().optional().default(authStore.getName),
+  middleName: z.string().optional().default(authStore.getMiddleName),
   login: z.string().optional(),
   password: z.string().optional(),
   passwordConfirm: z.string().optional(),
@@ -52,6 +54,7 @@ const onSubmit = form.handleSubmit((values) => {
           <FormControl>
             <Input
               type="text"
+              disabled
               v-bind="componentField"
             />
           </FormControl>
@@ -68,6 +71,7 @@ const onSubmit = form.handleSubmit((values) => {
           <FormControl>
             <Input
               type="text"
+              disabled
               v-bind="componentField"
             />
           </FormControl>
@@ -84,6 +88,7 @@ const onSubmit = form.handleSubmit((values) => {
           <FormControl>
             <Input
               type="text"
+              disabled
               v-bind="componentField"
             />
           </FormControl>
