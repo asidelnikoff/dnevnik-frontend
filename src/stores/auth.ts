@@ -20,6 +20,27 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = JSON.parse(localStorageUser)
   }
 
+  //
+  // Getters
+  //
+  
+  const getName = computed(() => {
+    return user?.value?.name || ''
+  })
+  const getLastName = computed(() => {
+    return user?.value?.lastName || ''
+  })
+  const getMiddleName = computed(() => {
+    return user?.value?.middleName || ''
+  })
+
+  const isTeacher = computed(() => {
+    return user?.value?.role === 'Учитель'
+  })
+  const isHeadteacher = computed(() => {
+    return user?.value?.role === 'Заведующий учебной частью'
+  })
+
   const isAuthorized = computed(() => {
     if (user.value) {
       return user.value.name && user.value.lastName && user.value.role;
@@ -31,13 +52,18 @@ export const useAuthStore = defineStore('auth', () => {
   // User login/logout
   //
 
-  function login(): boolean {
+  function login(rememberMe: boolean): boolean {
     // TODO: replace with server request
     const response = {
       data: mockUser,
     }
     user.value = response.data
-    localStorage.setItem('user', JSON.stringify(user.value))
+
+    if (rememberMe) {
+      localStorage.setItem('user', JSON.stringify(user.value))
+    } else {
+      localStorage.removeItem('user')
+    }
 
     return true
   }
@@ -79,6 +105,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   return { 
     user, 
+
+    getName,
+    getLastName,
+    getMiddleName,
+
+    isTeacher,
+    isHeadteacher,
 
     isAuthorized,
 

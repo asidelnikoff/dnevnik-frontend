@@ -3,28 +3,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 import HomeView from '@/views/HomeView.vue'
-import WelcomeView from '@/views/WelcomeView.vue'
 import LoginView from '@/views/LoginView.vue'
-import RegisterView from '@/views/RegisterView.vue'
 
-import WelcomeLayout from '@/layouts/WelcomeLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
-import RegisterDetailsLayout from '@/layouts/RegisterDetailsLayout.vue'
-import RegisterDetailsView from '@/views/RegisterDetailsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    //
-    // Welcome page
-    //
-    {
-      path: '/welcome',
-      name: 'welcome',
-      component: WelcomeView,
-      meta: { layout: WelcomeLayout }
-    },
     //
     // Authentication pages
     //
@@ -33,18 +19,6 @@ const router = createRouter({
       name: 'login',
       component: LoginView,
       meta: { layout: AuthLayout }
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: RegisterView,
-      meta: { layout: AuthLayout }
-    },
-    {
-      path: '/register-details',
-      name: 'registerDetails',
-      component: RegisterDetailsView,
-      meta: { layout: RegisterDetailsLayout }
     },
     //
     // Main pages
@@ -87,7 +61,7 @@ const privateRoutes = ['home', 'students', 'stuff', 'schedule', 'profile']
 router.beforeEach((to) => {
   const authStore = useAuthStore()
 
-  if ( to.name === 'welcome' ) {
+  if ( to.name === 'login' ) {
     authStore.logout()
   }
 
@@ -97,7 +71,7 @@ router.beforeEach((to) => {
     !isAuthenticated &&
     privateRoutes.includes(to.name as string)
   ) {
-    return { name: 'welcome' }
+    return { name: 'login' }
   }
 })
 

@@ -41,7 +41,7 @@ const footerItems = [
   },
   {
     title: "Выйти",
-    routeName: "welcome",
+    routeName: "login",
     icon: LogOut,
   },
 ]

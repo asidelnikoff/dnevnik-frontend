@@ -15,7 +15,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+
 import { Input } from '@/components/ui/input'
+import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 
 //
 // Form schema and validations
@@ -24,6 +26,7 @@ import { Input } from '@/components/ui/input'
 const formSchema = toTypedSchema(z.object({
   login: z.string({ message: 'Введите логин'}),
   password: z.string({ message: 'Введите пароль'}),
+  rememberMe: z.boolean().default(false),
 }))
 const form = useForm({
   validationSchema: formSchema,
@@ -35,7 +38,7 @@ const form = useForm({
 
 const authStore = useAuthStore()
 const onSubmit = form.handleSubmit((values) => {
-  if (authStore.login()) {
+  if (authStore.login(values.rememberMe)) {
     console.log(values)
     router.replace({name: 'home'})
   }
@@ -76,6 +79,24 @@ const onSubmit = form.handleSubmit((values) => {
           />
         </FormControl>
         <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField
+      v-slot="{ value, handleChange }"
+      name="rememberMe"
+    >
+      <FormItem class="flex items-center gap-3">
+        <FormControl>
+          <Checkbox
+            :model-value="value"
+            @update:model-value="handleChange"
+          />
+        </FormControl>
+        <div class="space-y-1 leading-none">
+          <FormLabel>Запомнить меня</FormLabel>
+          <FormMessage />
+        </div>
       </FormItem>
     </FormField>
 
