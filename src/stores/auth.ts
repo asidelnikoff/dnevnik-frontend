@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { RegisterData, User } from '@/api/types/auth'
+import type { User } from '@/api/types/auth'
 
 //
 // Mock User until backend is ready
@@ -9,7 +9,7 @@ import type { RegisterData, User } from '@/api/types/auth'
 const mockUser = {
   name: 'Иван',
   lastName: 'Иванов',
-  role: 'Ученик',
+  role: 'Заведующий учебной частью',
   class: '10А'
 }
 
@@ -72,33 +72,6 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null;
     localStorage.removeItem('user')
   }
-
-  //
-  // User registration
-  // 
-
-  const initialRegisterData = {
-    login: null,
-    password: null,
-    passwordConfirm: null,
-  }
-  const registerData = ref<RegisterData>(initialRegisterData)
-
-  function setRegisterData(data: RegisterData): void {
-    registerData.value = data;
-  }
-
-  function register(): boolean {
-    // TODO: replace with server request
-    const response = {
-      data: mockUser,
-    }
-    user.value = response.data
-    localStorage.setItem('user', JSON.stringify(user.value))
-
-    return true
-  }
-
   //
   // Exported members
   //
@@ -117,8 +90,5 @@ export const useAuthStore = defineStore('auth', () => {
 
     login, 
     logout,
-
-    setRegisterData,
-    register,
   }
 })

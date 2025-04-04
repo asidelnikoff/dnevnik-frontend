@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useAuthStore } from "@/stores/auth";
+
 import { Home, Users, UsersRound, Calendar, UserPen, LogOut } from "lucide-vue-next"
+
 import {
   Sidebar,
   SidebarContent,
@@ -27,12 +30,17 @@ const contentItems = [
     routeName: 'stuff',
     icon: UsersRound,
   },
-  {
+];
+
+const authStore = useAuthStore()
+if (!authStore.isHeadteacher) {
+  contentItems.push({
     title: "Сводное",
     routeName: 'schedule',
     icon: Calendar,
-  },
-];
+  })
+}
+
 const footerItems = [
   {
     title: "Профиль",

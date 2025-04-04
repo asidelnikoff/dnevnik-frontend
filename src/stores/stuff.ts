@@ -31,5 +31,16 @@ export const useStuffStore = defineStore('stuff', () => {
     return true 
   }
 
-  return { stuff, getStuff}
+  function addStuff (stuffData: Stuff): boolean {
+    stuff.value.push(stuffData)
+
+    return true
+  }
+
+  return {
+    stuff,
+
+    getStuff,
+    addStuff
+  }
 })
