@@ -17,8 +17,8 @@ export type Lesson = {
   subject: string;
   class: string;
   time: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
 }
 
 const mockSummary: Summary[] = [
@@ -50,7 +50,7 @@ export const useSummaryStore = defineStore('summary', () => {
   function createLesson(lesson: Lesson): boolean {
     const response = {
       data: {
-        id: 2,
+        id: '2',
         class: lesson.class,
         subject: lesson.subject,
         teacher: mockSummary[0].teacher

@@ -75,7 +75,11 @@ const form = useForm({
 //
 const summaryStore = useSummaryStore()
 const onSubmit = form.handleSubmit((values) => {
-  if (summaryStore.createLesson(values)) {
+  if (summaryStore.createLesson({
+    ...values,
+    startDate: date.value.start?.toString() || '',
+    endDate: date.value.end?.toString() || '',
+  })) {
     toast('Урок успешно создан')
     router.push({ name: 'summary' })
     return
