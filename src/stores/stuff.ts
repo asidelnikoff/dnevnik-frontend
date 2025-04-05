@@ -14,7 +14,7 @@ const mockStuff: Stuff[] = [
     lastName: 'Иванов',
     middleName: 'Олегович',
     role: 'Учитель',
-    subjects: ['Русский язык', 'Математика']
+    subject: 'Русский язык',
   }
 ] 
 

@@ -30,7 +30,7 @@ const contentItems = [
   },
   {
     title: "Сводное",
-    routeName: 'schedule',
+    routeName: 'summary',
     icon: Calendar,
   }
 ];

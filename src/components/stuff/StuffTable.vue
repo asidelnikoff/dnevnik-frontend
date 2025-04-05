@@ -3,7 +3,7 @@ import { onBeforeMount } from 'vue'
 
 import { useStuffStore } from '@/stores/stuff'
 
-import type { Stuff } from '@/api/types/stuff'
+import { getFullName } from '@/utils/getFullName'
 
 import {
   Table,
@@ -18,18 +18,6 @@ const stuffStore = useStuffStore()
 onBeforeMount(() => {
   stuffStore.getStuff()
 })
-
-function getStuffFullName(stuff: Stuff): string {
-  let result = `${stuff.lastName} ${stuff.name}`
-  if (stuff.middleName) {
-    result += ' ' + stuff.middleName
-  }
-  return result;
-}
-
-function getStuffSubjectsList(stuff: Stuff): string {
-  return stuff.subjects.join(', ');
-}
 </script>
 <template>
   <Table>
@@ -48,8 +36,8 @@ function getStuffSubjectsList(stuff: Stuff): string {
         :key="stuff.id"
       >
         <TableCell> {{ stuff.id }} </TableCell>
-        <TableCell>{{ getStuffFullName(stuff) }}</TableCell>
-        <TableCell>{{ getStuffSubjectsList(stuff) }}</TableCell>
+        <TableCell>{{ getFullName(stuff) }}</TableCell>
+        <TableCell>{{ stuff.subject }}</TableCell>
         <TableCell>{{ stuff.role }}</TableCell>
       </TableRow>
     </TableBody>

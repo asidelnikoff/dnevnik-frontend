@@ -18,11 +18,10 @@ import {
 
 import { Input } from '@/components/ui/input'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
-
+import { toast } from 'vue-sonner'
 //
 // Form schema and validations
 //
-
 const formSchema = toTypedSchema(z.object({
   login: z.string({ message: 'Введите логин'}),
   password: z.string({ message: 'Введите пароль'}),
@@ -31,17 +30,17 @@ const formSchema = toTypedSchema(z.object({
 const form = useForm({
   validationSchema: formSchema,
 })
-
 //
 // Submit action
 //
-
 const authStore = useAuthStore()
 const onSubmit = form.handleSubmit((values) => {
   if (authStore.login(values.rememberMe)) {
-    console.log(values)
     router.replace({name: 'home'})
+    toast('Авторизация прошла успешно')
+    return;
   }
+  toast('Не удалось авторизоваться')
 })
 </script>
 
