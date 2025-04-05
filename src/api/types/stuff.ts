@@ -3,6 +3,6 @@ export type Stuff = {
   name: string;
   lastName: string;
   middleName?: string | null;
-  subjects: string[];
+  subject: string;
   role: string;
 }

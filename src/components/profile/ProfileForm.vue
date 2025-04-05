@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useAuthStore } from '@/stores/auth'
-
-const emit = defineEmits(['submit'])
-
+//
+// Form schema and validation
+//
 const authStore = useAuthStore()
 const formSchema = toTypedSchema(z.object({
   lastName: z.string().optional().default(authStore.getLastName),
@@ -29,13 +29,14 @@ const formSchema = toTypedSchema(z.object({
   message: "Пароли не совпадают",
     path: ["passwordConfirm"],
 }))
-
 const form = useForm({
   validationSchema: formSchema,
 })
-
+//
+// Submit action
+//
 const onSubmit = form.handleSubmit((values) => {
-  emit('submit', values)
+  console.log(values)
 })
 </script>
 

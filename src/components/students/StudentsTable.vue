@@ -3,7 +3,7 @@ import { onBeforeMount } from 'vue'
 
 import { useStudentsStore } from '@/stores/students'
 
-import type { Student } from '@/api/types/student'
+import { getFullName } from '@/utils/getFullName'
 
 import {
   Table,
@@ -18,14 +18,6 @@ const studentsStore = useStudentsStore()
 onBeforeMount(() => {
   studentsStore.getStudents()
 })
-
-function getStudentFullName(student: Student): string {
-  let result = `${student.lastName} ${student.name}`
-  if (student.middleName) {
-    result += ' ' + student.middleName
-  }
-  return result;
-}
 </script>
 <template>
   <Table>
@@ -43,7 +35,7 @@ function getStudentFullName(student: Student): string {
         :key="student.id"
       >
         <TableCell> {{ student.id }} </TableCell>
-        <TableCell>{{ getStudentFullName(student) }}</TableCell>
+        <TableCell>{{ getFullName(student) }}</TableCell>
         <TableCell>{{ student.class }}</TableCell>
       </TableRow>
     </TableBody>

@@ -24,33 +24,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-
+import { toast } from 'vue-sonner'
 //
 // Form select values
 //
-
-const roleSelectValues = [
-  {
-    value: 'Учитель',
-    label: 'Учитель',
-  },
-]
-
-const subjectSelectValues = [
-  {
-    value: 'Русский язык',
-    label: 'Русский язык',
-  },
-  {
-    value: 'Математика',
-    label: 'Математика',
-  },
-];
-
+import { roleSelectValues } from '@/utils/selectValues'
+import { subjectSelectValues } from '@/utils/selectValues'
 //
 // Form schema and validations
 //
-
 const formSchema = toTypedSchema(z.object({
   login: z.string({ message: 'Введите логин'}),
   password: z.string({ message: 'Введите пароль'}),
@@ -60,26 +42,28 @@ const formSchema = toTypedSchema(z.object({
   middleName: z.string().optional(),
 
   role: z.string({ message: 'Выберите должность'}).default(roleSelectValues[0].value),
-  subjects: z.string().array().nonempty({ message: 'Выберите предметы'}).default([subjectSelectValues[0].value]),
+  subject: z.string({ message: 'Выберите предметы'}).default(subjectSelectValues[0].value),
 }))
 const form = useForm({
   validationSchema: formSchema,
   keepValuesOnUnmount: true,
 })
-
 //
 // Submit action
 //
-
 const stuffStore = useStuffStore()
 const onSubmit = form.handleSubmit((values) => {
-  if (stuffStore.addStuff({
+  const params = {
+    id: '2',
     ...values,
-    id: '2'
-  })) {
-    router.replace({ name: 'stuff' })
   }
-  console.log(values)
+
+  if (stuffStore.addStuff(params)) {
+    toast('Учитель успешно добавлен')
+    router.replace({ name: 'stuff' })
+    return;
+  }
+  toast('Не удалось добавить учителя')
 })
 </script>
 
@@ -203,13 +187,12 @@ const onSubmit = form.handleSubmit((values) => {
 
       <FormField
         v-slot="{ componentField }"
-        name="subjects"
+        name="subject"
       >
         <FormItem>
           <FormLabel><span>Предметы<sup>*</sup></span></FormLabel>
 
           <Select
-            multiple
             v-bind="componentField"
           >
             <FormControl>

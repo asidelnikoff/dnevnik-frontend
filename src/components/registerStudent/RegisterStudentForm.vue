@@ -23,26 +23,14 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { useStudentsStore } from '@/stores/students'
-
+import { toast } from 'vue-sonner'
 //
 // Form select values
 //
-
-const classSelectValues = [
-  {
-    value: '1А',
-    label: '1А',
-  },
-  {
-    value: '10Б',
-    label: '10Б',
-  },
-]
-
+import { classSelectValues } from '@/utils/selectValues'
 //
 // Form schema and validations
 //
-
 const formSchema = toTypedSchema(z.object({
   login: z.string({ message: 'Введите логин'}),
   password: z.string({ message: 'Введите пароль'}),
@@ -57,20 +45,21 @@ const form = useForm({
   validationSchema: formSchema,
   keepValuesOnUnmount: true,
 })
-
 //
 // Submit action
 //
-
 const studentsStore = useStudentsStore()
 const onSubmit = form.handleSubmit((values) => {
-  if (studentsStore.addStudent({
+  const params = {
+    id: '2',
     ...values,
-    id: '2'
-  })) {
+  }
+
+  if (studentsStore.addStudent(params)) {
+    toast('Ученик успешно добавлен')
     router.replace({ name: 'students' })
   }
-  console.log(values)
+  toast('Не удалось добавить ученика')
 })
 </script>
 

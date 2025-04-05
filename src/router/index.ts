@@ -10,6 +10,7 @@ import MainLayout from '@/layouts/MainLayout.vue'
 import RegisterLayout from '@/layouts/RegisterLayout.vue'
 import RegisterStudentView from '@/views/RegisterStudentView.vue'
 import RegisterStuffView from '@/views/RegisterStuffView.vue'
+import CreateLessonView from '@/views/CreateLessonView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,12 @@ const router = createRouter({
       component: RegisterStuffView,
       meta: { layout: RegisterLayout },
     },
+    {
+      path: '/create-lesson',
+      name: 'createLesson',
+      component: CreateLessonView,
+      meta: { layout: RegisterLayout },
+    },
     //
     // Main pages
     // 
@@ -50,31 +57,31 @@ const router = createRouter({
     {
       path: '/students',
       name: 'students',
-      component: import('@/views/StudentsView.vue'),
+      component: () => import('@/views/StudentsView.vue'),
       meta: { layout: MainLayout }
     },
     {
       path: '/stuff',
       name: 'stuff',
-      component: import('@/views/StuffView.vue'),
+      component: () => import('@/views/StuffView.vue'),
       meta: { layout: MainLayout }
     },
     {
-      path: '/schedule',
-      name: 'schedule',
-      component: import('@/views/ScheduleView.vue'),
+      path: '/summary',
+      name: 'summary',
+      component: () => import('@/views/SummaryView.vue'),
       meta: { layout: MainLayout }
     },
     {
       path: '/profile',
       name: 'profile',
-      component: import('@/views/ProfileView.vue'),
+      component: () => import('@/views/ProfileView.vue'),
       meta: { layout: MainLayout }
     }
   ],
 })
 
-const privateRoutes = ['home', 'students', 'stuff', 'schedule', 'profile']
+const privateRoutes = ['home', 'students', 'stuff', 'summary', 'profile']
 
 router.beforeEach((to) => {
   const authStore = useAuthStore()

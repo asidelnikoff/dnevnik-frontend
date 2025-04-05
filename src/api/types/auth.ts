@@ -4,16 +4,16 @@ export type LoginParams = {
 }
 
 export type User = {
-  name: string | null,
-  lastName: string | null,
-  middleName?: string | null,
-  role: string | null,
-  class?: string | null,
-  subject?: string | null,
+  name: string,
+  lastName: string,
+  middleName?: string,
+  role: string,
+  class?: string,
+  subject?: string,
 }
 
 export type RegisterData = {
-  login: string | null,
-  password: string | null,
-  passwordConfirm: string | null,
+  login: string,
+  password: string,
+  passwordConfirm: string,
 }

@@ -1,7 +1,30 @@
 <script setup lang='ts'>
-import StudentsComponent from '@/components/students/StudentsComponent.vue';
+import { useAuthStore } from '@/stores/auth';
+
+import { Button } from '@/components/ui/button'
+
+import StudentsFilters from '@/components/students/StudentsFilters.vue';
+import StudentsTable from '@/components/students/StudentsTable.vue';
+
+const authStore = useAuthStore()
 </script>
 
 <template>
-  <StudentsComponent />
+  <div class="w-5/10">
+    <StudentsFilters />
+    <StudentsTable />
+    <div
+      v-if="true"
+      class="w-fit mt-3 ml-auto"
+    >
+      <RouterLink :to="{name: 'registerStudent'}">
+        <Button
+          v-if="authStore.isHeadteacher"
+          variant="outline"
+        >
+          Добавить ученика
+        </Button>
+      </RouterLink>
+    </div>
+  </div>
 </template>
