@@ -1,43 +1,31 @@
-import type { Student } from '@/api/types/student';
+import userService, { type CreateStudentParams, type CreateStudentResponse, type GetStudentsParams, type GetStudentsResponse } from '@/api/services/usersService';
+import type { Student } from '@/api/types/users'
+import type { Response } from '@/api/types/response';
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-//
-// Mock Students until backend is ready
-//
-
-const mockStudents: Student[] = [
-  {
-    id: '1',
-    name: 'Иван',
-    lastName: 'Иванов',
-    class: '10А',
-  }
-] 
 
 export const useStudentsStore = defineStore('students', () => {
   const students = ref<Student[]>([]);
 
-  function getStudents(): boolean{
-    // TODO: change to server request
-    const response = {
-      data: mockStudents,
+  function getStudents(params: GetStudentsParams): Response<GetStudentsResponse>{
+    const response = userService.getStudents(params)
+    if (response.status === 200) {
+      students.value = response.data
     }
-    students.value = response.data
 
-    return true 
+    return response
   }
 
-  function addStudent (studentData: Student): boolean {
-    students.value.push(studentData)
+  function createStudent(params: CreateStudentParams): Response<CreateStudentResponse> {
+    const response = userService.createStudent(params)
 
-    return true
+    return response
   }
 
   return {
     students, 
 
     getStudents,
-    addStudent,
+    createStudent,
   }
 })

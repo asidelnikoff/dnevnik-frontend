@@ -16,7 +16,7 @@ import {
 
 const summaryStore = useSummaryStore()
 onBeforeMount(() => {
-  summaryStore.getSummary()
+  summaryStore.getSummary({})
 })
 </script>
 <template>

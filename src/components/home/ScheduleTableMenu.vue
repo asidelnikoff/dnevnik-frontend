@@ -12,7 +12,7 @@ const hasRights = computed(() => {
 </script>
 
 <template>
-  <DropdownMenu>
+  <DropdownMenu v-if="hasRights">
     <DropdownMenuTrigger as-child>
       <Button
         variant="ghost"
@@ -23,17 +23,17 @@ const hasRights = computed(() => {
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <DropdownMenuItem v-if="hasRights">
+      <DropdownMenuItem>
         Выставить оценку
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem v-if="hasRights">
+      <DropdownMenuItem>
         Создать домашнее задание
       </DropdownMenuItem>
-      <DropdownMenuItem v-if="hasRights">
+      <DropdownMenuItem>
         Редактировать домашнее задание
       </DropdownMenuItem>
-      <DropdownMenuItem v-if="hasRights">
+      <DropdownMenuItem>
         Удалить домашнее задание
       </DropdownMenuItem>
     </DropdownMenuContent>

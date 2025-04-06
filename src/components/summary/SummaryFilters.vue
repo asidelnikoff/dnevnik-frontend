@@ -1,14 +1,6 @@
 <script setup lang='ts'>
 import { Label } from '@/components/ui/label'
-
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import Input from '@/components/ui/input/Input.vue'
 
 import { Funnel } from 'lucide-vue-next'
 
@@ -18,20 +10,14 @@ import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
-  DateFormatter,
   type DateValue,
   getLocalTimeZone,
 } from '@internationalized/date'
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
 import { ref } from 'vue'
+import { getDateString } from '@/utils/dateHelper'
 
-
-const df = new DateFormatter('ru-RU', {
-  dateStyle: 'short',
-})
-
-import { timeSelectValues } from '@/utils/selectValues'
-const time = ref(timeSelectValues[0].value)
+const startTime = ref('')
 
 const date = ref<DateValue>()
 </script>
@@ -54,7 +40,7 @@ const date = ref<DateValue>()
               )"
             >
               <CalendarIcon class="mr-2 h-4 w-4" />
-              {{ date ? df.format(date.toDate(getLocalTimeZone())) : "Выберите дату" }}
+              {{ date ? getDateString(date.toDate(getLocalTimeZone())) : "Выберите дату" }}
             </Button>
           </PopoverTrigger>
           <PopoverContent class="w-auto p-0">
@@ -70,23 +56,10 @@ const date = ref<DateValue>()
         <Label
           class="mb-1"
           for="search"
-        >Время</Label>
-        <Select v-model="time">
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem
-                v-for="{ value, label} in timeSelectValues"
-                :key="value"
-                :value="value"
-              >
-                {{ label }}
-              </SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        >Время начала</Label>
+        <Input 
+          v-model="startTime"
+        />
       </div>
     </div>
     <Button

@@ -16,6 +16,7 @@ import {
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  dateString: string
 }>()
 
 const table = useVueTable({
@@ -32,7 +33,7 @@ const table = useVueTable({
         class="h-10 text-center"
         colspan="10"
       >
-        Суббота, 5 апреля
+        {{ dateString }}
       </TableCell>
     </TableRow>
     <TableBody>
@@ -59,7 +60,7 @@ const table = useVueTable({
             :colspan="columns.length"
             class="h-24 text-center"
           >
-            Нет результата
+            Нет данных
           </TableCell>
         </TableRow>
       </template>

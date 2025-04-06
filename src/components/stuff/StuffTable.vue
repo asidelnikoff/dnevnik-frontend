@@ -16,7 +16,7 @@ import {
 
 const stuffStore = useStuffStore()
 onBeforeMount(() => {
-  stuffStore.getStuff()
+  stuffStore.getStuff({})
 })
 </script>
 <template>

@@ -35,7 +35,12 @@ const form = useForm({
 //
 const authStore = useAuthStore()
 const onSubmit = form.handleSubmit((values) => {
-  if (authStore.login(values.rememberMe)) {
+  const loginParams = {
+    login: values.login,
+    password: values.password
+  }
+  const response = authStore.login(loginParams, values.rememberMe)
+  if (response.status === 200) {
     router.replace({name: 'home'})
     toast('Авторизация прошла успешно')
     return;
