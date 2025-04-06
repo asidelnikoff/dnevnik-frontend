@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import Input from '@/components/ui/input/Input.vue'
 //
 // Date
 //
@@ -33,16 +34,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { RangeCalendar } from '@/components/ui/range-calendar'
 import {
   CalendarDate,
-  DateFormatter,
   getLocalTimeZone,
 } from '@internationalized/date'
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
 import { type Ref, ref } from 'vue'
 import { useSummaryStore } from '@/stores/summary'
-
-const df = new DateFormatter('ru-RU', {
-  dateStyle: 'short',
-})
 
 const today = new Date(Date.now())
 const date = ref({
@@ -52,19 +48,20 @@ const date = ref({
 //
 // Form select values
 //
-import { subjectSelectValues } from '@/utils/selectValues'
 import { classSelectValues } from '@/utils/selectValues'
-import { timeSelectValues } from '@/utils/selectValues'
 import { daysSelectValues } from '@/utils/selectValues'
+import { getDateString } from '@/utils/dateHelper'
 //
 // Form schema and validations
 //
 const formSchema = toTypedSchema(z.object({
-  subject: z.string().default(subjectSelectValues[0].value),
+  subject: z.string({ message: 'Введите предмет'}),
   class: z.string().default(classSelectValues[0].value),
-  time: z.string().default(timeSelectValues[0].value),
 
-  days: z.string().array().nonempty({ message: 'Выберите дни недели'}).default([daysSelectValues[0].value]),
+  startTime: z.preprocess(input => `${input}:00`, z.string({message: 'Введите время'}).time({ precision: 0, message: 'Формат - 23:59'})),
+  endTime: z.preprocess(input => `${input}:00`, z.string({message: 'Введите время'}).time({ precision: 0, message: 'Формат - 23:59'})),
+
+  weekDays: z.string().array().nonempty({ message: 'Выберите дни недели'}).default([daysSelectValues[0].value]),
 }))
 const form = useForm({
   validationSchema: formSchema,
@@ -75,11 +72,19 @@ const form = useForm({
 //
 const summaryStore = useSummaryStore()
 const onSubmit = form.handleSubmit((values) => {
-  if (summaryStore.createLesson({
+  const params = {
     ...values,
-    startDate: date.value.start?.toString() || '',
-    endDate: date.value.end?.toString() || '',
-  })) {
+
+    startTime: values.startTime,
+    endTime: values.endTime,
+
+    startDate: getDateString(date.value.start?.toDate(getLocalTimeZone()) as Date),
+    endDate: getDateString(date.value.end?.toDate(getLocalTimeZone()) as Date),
+
+    teacherId: '1',
+  }
+  const response = summaryStore.createSchedule(params)
+  if (response.status === 200) {
     toast('Урок успешно создан')
     router.push({ name: 'summary' })
     return
@@ -100,25 +105,12 @@ const onSubmit = form.handleSubmit((values) => {
       >
         <FormItem>
           <FormLabel><span>Предмет<sup>*</sup></span></FormLabel>
-
-          <Select v-bind="componentField">
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem
-                  v-for="{ value, label} in subjectSelectValues"
-                  :key="value"
-                  :value="value"
-                >
-                  {{ label }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <FormControl>
+            <Input
+              type="text"
+              v-bind="componentField"
+            />
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -156,31 +148,32 @@ const onSubmit = form.handleSubmit((values) => {
 
       <FormField
         v-slot="{ componentField }"
-        name="time"
+        name="startTime"
       >
         <FormItem>
-          <FormLabel><span>Время<sup>*</sup></span></FormLabel>
+          <FormLabel><span>Время начала<sup>*</sup></span></FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              v-bind="componentField"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
 
-          <Select
-            v-bind="componentField"
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem
-                  v-for="{ value, label} in timeSelectValues"
-                  :key="value"
-                  :value="value"
-                >
-                  {{ label }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+      <FormField
+        v-slot="{ componentField }"
+        name="endTime"
+      >
+        <FormItem>
+          <FormLabel><span>Время окончания<sup>*</sup></span></FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              v-bind="componentField"
+            />
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -189,7 +182,7 @@ const onSubmit = form.handleSubmit((values) => {
     <div class="flex items-center gap-5">
       <FormField
         v-slot="{ componentField }"
-        name="days"
+        name="weekDays"
       >
         <FormItem>
           <FormLabel><span>День недели<sup>*</sup></span></FormLabel>
@@ -234,15 +227,15 @@ const onSubmit = form.handleSubmit((values) => {
                 <CalendarIcon class="mr-2 h-4 w-4" />
                 <template v-if="date.start">
                   <template v-if="date.end">
-                    {{ df.format(date.start.toDate(getLocalTimeZone())) }} - {{ df.format(date.end.toDate(getLocalTimeZone())) }}
+                    {{ getDateString(date.start.toDate(getLocalTimeZone())) }} - {{ getDateString(date.end.toDate(getLocalTimeZone())) }}
                   </template>
 
                   <template v-else>
-                    {{ df.format(date.start.toDate(getLocalTimeZone())) }}
+                    {{ getDateString(date.start.toDate(getLocalTimeZone())) }}
                   </template>
                 </template>
                 <template v-else>
-                  Pick a date
+                  Ввыберите дату
                 </template>
               </Button>
             </PopoverTrigger>

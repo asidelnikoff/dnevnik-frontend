@@ -1,70 +1,31 @@
-import type { User } from '@/api/types/auth';
+import scheduleService, { type CreateScheduleParams, type CreateScheduleResponse, type GetScheduleSummaryParams, type GetScheduleSummaryResponse } from '@/api/services/scheduleService';
+import type { Response } from '@/api/types/response';
+import type { Schedule } from '@/api/types/shedule';
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-//
-// Mock Summary until backend is ready
-//
-
-export type Summary = {
-  id: string;
-  class: string;
-  subject: string;
-  teacher: User;
-}
-
-export type Lesson = {
-  subject: string;
-  class: string;
-  time: string;
-  startDate: string;
-  endDate: string;
-}
-
-const mockSummary: Summary[] = [
-  {
-    id: '1',
-    class: '10А',
-    subject: 'Русский язык',
-    teacher: {
-      name: 'Иван',
-      lastName: 'Иванов',
-      role: 'Учитель'
-    }
-  }
-] 
-
 export const useSummaryStore = defineStore('summary', () => {
-  const summary = ref<Summary[]>([]);
+  const summary = ref<Schedule[]>([]);
 
-  function getSummary(): boolean{
-    // TODO: change to server request
-    const response = {
-      data: mockSummary,
+  function getSummary(params: GetScheduleSummaryParams): Response<GetScheduleSummaryResponse>{
+    const response = scheduleService.getSheduleSummary(params)
+    if (response.status === 200) {
+      summary.value = response.data
     }
-    summary.value = response.data
 
-    return true 
+    return response
   }
+  
+  function createSchedule(params: CreateScheduleParams): Response<CreateScheduleResponse> {
+    const response = scheduleService.createSchedule(params)
 
-  function createLesson(lesson: Lesson): boolean {
-    const response = {
-      data: {
-        id: '2',
-        class: lesson.class,
-        subject: lesson.subject,
-        teacher: mockSummary[0].teacher
-      }
-    }
-
-    summary.value.push(response.data)
-    return true;
+    return response
   }
 
   return {
     summary,
 
     getSummary,
-    createLesson,
+    createSchedule,
   }
 })

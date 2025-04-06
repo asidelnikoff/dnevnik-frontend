@@ -53,12 +53,9 @@ const form = useForm({
 //
 const stuffStore = useStuffStore()
 const onSubmit = form.handleSubmit((values) => {
-  const params = {
-    id: '2',
-    ...values,
-  }
-
-  if (stuffStore.addStuff(params)) {
+  const params = values
+  const response = stuffStore.createTeacher(params)
+  if (response.status === 200) {
     toast('Учитель успешно добавлен')
     router.replace({ name: 'stuff' })
     return;

@@ -1,46 +1,33 @@
 
-import type { Stuff } from '@/api/types/stuff';
+import type { CreateTeacherParams, CreateTeacherResponse, GetStuffParams, GetStuffResponse } from '@/api/services/usersService';
+import userService from '@/api/services/usersService';
+import type { Stuff } from '@/api/types/users';
+import type { Response } from '@/api/types/response';
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-//
-// Mock Stuff until backend is ready
-//
-
-const mockStuff: Stuff[] = [
-  {
-    id: '1',
-    name: 'Иван',
-    lastName: 'Иванов',
-    middleName: 'Олегович',
-    role: 'Учитель',
-    subject: 'Русский язык',
-  }
-] 
 
 export const useStuffStore = defineStore('stuff', () => {
   const stuff = ref<Stuff[]>([]);
 
-  function getStuff(): boolean{
-    // TODO: change to server request
-    const response = {
-      data: mockStuff,
+  function getStuff(params: GetStuffParams): Response<GetStuffResponse>{
+    const response = userService.getStuff(params)
+    if (response.status === 200) {
+      stuff.value = response.data
     }
-    stuff.value = response.data
 
-    return true 
+    return response
   }
 
-  function addStuff (stuffData: Stuff): boolean {
-    stuff.value.push(stuffData)
+  function createTeacher(params: CreateTeacherParams): Response<CreateTeacherResponse> {
+    const response = userService.createTeacher(params)
 
-    return true
+    return response
   }
 
   return {
     stuff,
 
     getStuff,
-    addStuff
+    createTeacher,
   }
 })

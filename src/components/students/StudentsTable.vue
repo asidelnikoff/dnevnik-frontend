@@ -16,7 +16,7 @@ import {
 
 const studentsStore = useStudentsStore()
 onBeforeMount(() => {
-  studentsStore.getStudents()
+  studentsStore.getStudents({})
 })
 </script>
 <template>
