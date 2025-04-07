@@ -1,4 +1,4 @@
-import type { Teacher } from "./users"
+import type { Stuff } from "./users"
 
 export type Schedule = {
   id: string,
@@ -8,13 +8,13 @@ export type Schedule = {
   startTime: string,
   endTime: string,
   subject: string,
-  teacher: Teacher,
+  teacher: Stuff,
   class: string,
   homework?: string,
   lessonGrade?: number,
   homeworkGrade?: number
 }
 
-export type ScheduleTableItem = {
+export type ScheduleExtended = Schedule & {
   teacherFullName: string;
 }

@@ -7,6 +7,8 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 
+import TeacherCombobox from './TeacherCombobox.vue'
+
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -62,6 +64,8 @@ const formSchema = toTypedSchema(z.object({
   endTime: z.preprocess(input => `${input}:00`, z.string({message: 'Введите время'}).time({ precision: 0, message: 'Формат - 23:59'})),
 
   weekDays: z.string().array().nonempty({ message: 'Выберите дни недели'}).default([daysSelectValues[0].value]),
+
+  teacherId: z.string({ message: 'Выберите учителя'}),
 }))
 const form = useForm({
   validationSchema: formSchema,
@@ -75,13 +79,14 @@ const onSubmit = form.handleSubmit((values) => {
   const params = {
     ...values,
 
-    startTime: values.startTime,
-    endTime: values.endTime,
+    // Slice off seconds and ':' character
+    startTime: values.startTime.slice(0, -3),
+    endTime: values.endTime.slice(0, -3),
 
     startDate: getDateString(date.value.start?.toDate(getLocalTimeZone()) as Date),
     endDate: getDateString(date.value.end?.toDate(getLocalTimeZone()) as Date),
 
-    teacherId: '1',
+    teacherId: values.teacherId,
   }
   const response = summaryStore.createSchedule(params)
   if (response.status === 200) {
@@ -251,6 +256,13 @@ const onSubmit = form.handleSubmit((values) => {
         </FormItem>
       </FormField>
     </div>
+
+    <FormField name="teacherId">
+      <FormItem>
+        <TeacherCombobox @change="(value: string) => form.setFieldValue('teacherId', value)" />
+        <FormMessage />
+      </FormItem>
+    </FormField>
 
     <Button
       class="mt-15 ml-auto"

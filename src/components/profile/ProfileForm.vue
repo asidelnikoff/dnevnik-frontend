@@ -18,19 +18,30 @@ import { useAuthStore } from '@/stores/auth'
 //
 const authStore = useAuthStore()
 const formSchema = toTypedSchema(z.object({
-  lastName: z.string().optional().default(authStore.getLastName),
-  name: z.string().optional().default(authStore.getName),
-  middleName: z.string().optional().default(authStore.getMiddleName),
-  login: z.string().optional(),
-  password: z.string().optional(),
-  passwordConfirm: z.string().optional(),
+  lastName: z.string().optional(),
+  name: z.string().optional(),
+  middleName: z.string().optional(),
+  oldPassword: z.string({ message: 'Введите текущий пароль'}),
+  newLogin: z.string().optional(),
+  newPassword: z.string().optional(),
+  newPasswordConfirm: z.string().optional(),
 })
-.refine((data) => data.password === data.passwordConfirm, {
+.refine((data) => data.newPassword === data.newPasswordConfirm, {
   message: "Пароли не совпадают",
-    path: ["passwordConfirm"],
+    path: ["newPasswordConfirm"],
+})
+.refine(data => data.newLogin || data.newPassword, {
+  message: "Необходимо указать новый логин или новый пароль",
+  path: ["newLogin"],
 }))
 const form = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    oldPassword: undefined,
+    lastName: authStore.getLastName,
+    name: authStore.getName,
+    middleName: authStore.getMiddleName,
+  }
 })
 //
 // Submit action
@@ -51,7 +62,7 @@ const onSubmit = form.handleSubmit((values) => {
         name="lastName"
       >
         <FormItem>
-          <FormLabel><span>Фамилия<sup>*</sup></span></FormLabel>
+          <FormLabel><span>Фамилия</span></FormLabel>
           <FormControl>
             <Input
               type="text"
@@ -68,7 +79,7 @@ const onSubmit = form.handleSubmit((values) => {
         name="name"
       >
         <FormItem>
-          <FormLabel><span>Имя<sup>*</sup></span></FormLabel>
+          <FormLabel><span>Имя</span></FormLabel>
           <FormControl>
             <Input
               type="text"
@@ -100,10 +111,26 @@ const onSubmit = form.handleSubmit((values) => {
 
     <FormField
       v-slot="{ componentField }"
-      name="login"
+      name="oldPassword"
     >
       <FormItem>
-        <FormLabel>Логин</FormLabel>
+        <FormLabel><span>Текущий пароль<sup>*</sup></span></FormLabel>
+        <FormControl>
+          <Input
+            type="password"
+            v-bind="componentField"
+          />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField
+      v-slot="{ componentField }"
+      name="newLogin"
+    >
+      <FormItem>
+        <FormLabel><span>Новый логин<sup>*</sup></span></FormLabel>
         <FormControl>
           <Input
             type="text"
@@ -114,37 +141,44 @@ const onSubmit = form.handleSubmit((values) => {
       </FormItem>
     </FormField>
 
-    <FormField
-      v-slot="{ componentField }"
-      name="password"
-    >
-      <FormItem>
-        <FormLabel>Пароль</FormLabel>
-        <FormControl>
-          <Input
-            type="password"
-            v-bind="componentField"
-          />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+    <div class="flex gap-5">
+      <div class="flex-1/2">
+        <FormField
+          v-slot="{ componentField }"
+          name="newPassword"
+        >
+          <FormItem>
+            <FormLabel><span>Новый пароль<sup>*</sup></span></FormLabel>
+            <FormControl>
+              <Input
+                type="password"
+                v-bind="componentField"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
 
-    <FormField
-      v-slot="{ componentField }"
-      name="passwordConfirm"
-    >
-      <FormItem>
-        <FormLabel>Повтор пароля</FormLabel>
-        <FormControl>
-          <Input
-            type="password"
-            v-bind="componentField"
-          />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+      <div class="flex-1/2">
+        <FormField
+          v-slot="{ componentField }"
+          name="newPasswordConfirm"
+          class="flex-1/2"
+        >
+          <FormItem>
+            <FormLabel>Повтор пароля</FormLabel>
+            <FormControl>
+              <Input
+                type="password"
+                v-bind="componentField"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
+    </div>
 
     <Button
       class="mt-15 ml-auto"

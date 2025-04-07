@@ -1,7 +1,7 @@
 <script setup lang='ts'>
-import { onBeforeMount } from 'vue'
+import { type PropType } from 'vue'
 
-import { useStuffStore } from '@/stores/stuff'
+import type { Stuff } from '@/api/types/users'
 
 import { getFullName } from '@/utils/getFullName'
 
@@ -14,9 +14,11 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-const stuffStore = useStuffStore()
-onBeforeMount(() => {
-  stuffStore.getStuff({})
+defineProps({
+  stuff: {
+    type: Array as PropType<Stuff[]>,
+    required: true,
+  }
 })
 </script>
 <template>
@@ -32,7 +34,7 @@ onBeforeMount(() => {
 
     <TableBody class="w-full">
       <TableRow
-        v-for="stuff in stuffStore.stuff"
+        v-for="stuff in stuff"
         :key="stuff.id"
       >
         <TableCell> {{ stuff.id }} </TableCell>

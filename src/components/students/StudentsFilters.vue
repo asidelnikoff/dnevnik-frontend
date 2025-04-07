@@ -5,6 +5,8 @@ import { Label } from '@/components/ui/label'
 import Button from '@/components/ui/button/Button.vue';
 
 import { Funnel } from 'lucide-vue-next'
+
+const search = defineModel<string>('search')
 </script>
 
 <template>
@@ -16,6 +18,7 @@ import { Funnel } from 'lucide-vue-next'
       >Поиск</Label>
       <Input
         id="search"
+        v-model="search"
         type="text"
         placeholder="Введите ФИО"
       />

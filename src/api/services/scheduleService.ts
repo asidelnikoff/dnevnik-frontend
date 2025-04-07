@@ -1,7 +1,7 @@
 import type { Response } from "../types/response";
 import type { Schedule } from "../types/shedule";
 import type { Student } from "../types/users";
-import { mockStudents, mockTeachers } from "./usersService";
+import { mockStudents, mockStuff, mockTeachers } from "./usersService";
 
 export type GetScheduleParams = {
   date?: string,
@@ -81,9 +81,8 @@ const mockSchedule: Schedule[] = [
     startTime: '9:00',
     endTime: '9:45',
     subject: 'Математика',
-    teacher: mockTeachers[0],
+    teacher: mockStuff[0],
     class: '7Б',
-    homework: 'стр.256 N3-5',
     lessonGrade: 5,
     homeworkGrade: 5 
   },
@@ -95,7 +94,7 @@ const mockSchedule: Schedule[] = [
     startTime: '10:00',
     endTime: '10:45',
     subject: 'Химия',
-    teacher: mockTeachers[0],
+    teacher: mockStuff[1],
     class: '5В',
     homework: 'конспект',
     lessonGrade: 5,
@@ -141,7 +140,7 @@ const scheduleService = {
       weekDays: params.weekDays,
       class: params.class,
       subject: params.subject,
-      teacher: mockTeachers[0]
+      teacher: mockStuff.find(teacher => teacher.id === params.teacherId) || mockStuff[0]
     }
     mockSchedule.push(mockCreateSchedule)
 
@@ -233,6 +232,9 @@ const scheduleService = {
   updateScheduleHomework(id: string, params: UpdateScheduleHomeworkParams): Response<undefined> {
     console.log(id, params)
 
+    const scheduleId = mockSchedule.findIndex(scheduleItem => scheduleItem.id === id)
+    mockSchedule[scheduleId].homework = params.homework
+
     return {
       data: undefined,
       status: 200
@@ -243,6 +245,9 @@ const scheduleService = {
   */
   deleteScheduleHomework(id: string): Response<undefined> {
     console.log(id)
+
+    const scheduleId = mockSchedule.findIndex(scheduleItem => scheduleItem.id === id)
+    mockSchedule[scheduleId].homework = ''
 
     return {
       data: undefined,
