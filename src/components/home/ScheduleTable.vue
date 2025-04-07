@@ -1,15 +1,9 @@
 <script setup lang='ts'>
-import { ref } from 'vue'
-
 import { onMounted } from 'vue'
 import { scheduleTableColumns } from './sheduleTableColumns'
 import DataTable from './DataTable.vue'
 import { useScheduleStore } from '@/stores/schedule'
-import type { ScheduleTableItem } from '@/api/types/shedule'
-import { getFullName } from '@/utils/getFullName'
 import { getDateString, getScheduleTableHeader } from '@/utils/dateHelper'
-
-const data = ref<ScheduleTableItem[]>([])
 
 const scheduleStore = useScheduleStore()
 async function getData() {
@@ -23,13 +17,7 @@ async function getData() {
 }
 
 onMounted(async () => {
-  const responseData = await getData()
-  data.value = responseData.map(scheduleItem => {
-    return {
-      ...scheduleItem,
-      teacherFullName: getFullName(scheduleItem.teacher)
-    }
-  })
+  await getData()
 })
 </script>
 
@@ -40,7 +28,7 @@ onMounted(async () => {
     <DataTable
       :date-string="getScheduleTableHeader(scheduleStore.getDate)"
       :columns="scheduleTableColumns"
-      :data="data"
+      :data="scheduleStore.schedule"
     />
   </div>
 </template>

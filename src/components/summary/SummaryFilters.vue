@@ -10,16 +10,17 @@ import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
-  type DateValue,
+  today,
   getLocalTimeZone,
+  type DateValue,
 } from '@internationalized/date'
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { getDateString } from '@/utils/dateHelper'
 
-const startTime = ref('')
+const startTime = ref<string>('8:00')
 
-const date = ref<DateValue>()
+const date = ref(today(getLocalTimeZone())) as Ref<DateValue>
 </script>
 
 <template>
@@ -58,7 +59,7 @@ const date = ref<DateValue>()
           for="search"
         >Время начала</Label>
         <Input 
-          v-model="startTime"
+          :model-value="startTime" 
         />
       </div>
     </div>
@@ -73,4 +74,4 @@ const date = ref<DateValue>()
       <span class="sr-only">Фильтр</span>
     </Button>
   </div>
-</template>v-model="value
+</template>

@@ -29,7 +29,6 @@ import { toast } from 'vue-sonner'
 // Form select values
 //
 import { roleSelectValues } from '@/utils/selectValues'
-import { subjectSelectValues } from '@/utils/selectValues'
 //
 // Form schema and validations
 //
@@ -42,7 +41,7 @@ const formSchema = toTypedSchema(z.object({
   middleName: z.string().optional(),
 
   role: z.string({ message: 'Выберите должность'}).default(roleSelectValues[0].value),
-  subject: z.string({ message: 'Выберите предметы'}).default(subjectSelectValues[0].value),
+  subject: z.string({ message: 'Выберите предмет'}),
 }))
 const form = useForm({
   validationSchema: formSchema,
@@ -187,28 +186,13 @@ const onSubmit = form.handleSubmit((values) => {
         name="subject"
       >
         <FormItem>
-          <FormLabel><span>Предметы<sup>*</sup></span></FormLabel>
-
-          <Select
-            v-bind="componentField"
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem
-                  v-for="{ value, label} in subjectSelectValues"
-                  :key="value"
-                  :value="value"
-                >
-                  {{ label }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <FormLabel><span>Предмет<sup>*</sup></span></FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              v-bind="componentField"
+            />
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>

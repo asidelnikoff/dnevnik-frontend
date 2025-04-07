@@ -1,6 +1,7 @@
 import type { Student, Stuff, Teacher } from "../types/users";
 import type { Response } from "../types/response";
 import type { LoginParams } from "./loginService";
+import { getFullName } from "@/utils/getFullName";
 
 export type UpdatePasswordParams = {
   newLogin?: string;
@@ -95,6 +96,13 @@ const userService = {
   */
   getStudents(params: GetStudentsParams): Response<GetStudentsResponse> {
     console.log(params)
+    if (typeof params.search === 'string') {
+      const search = params.search as string;
+      return {
+        data: mockStudents.filter(student => getFullName(student).toLowerCase().includes(search.toLowerCase() as string)),
+        status: 200,
+      }
+    }
     return {
       data: mockStudents,
       status: 200
@@ -106,6 +114,13 @@ const userService = {
   */
   getStuff(params: GetStuffParams): Response<GetStuffResponse> {
     console.log(params)
+    if (typeof params.search === 'string') {
+      const search = params.search as string;
+      return {
+        data: mockStuff.filter(stuff => getFullName(stuff).toLowerCase().includes(search.toLowerCase() as string)),
+        status: 200,
+      }
+    }
     return {
       data: mockStuff,
       status: 200
