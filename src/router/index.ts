@@ -7,7 +7,6 @@ import LoginView from '@/views/LoginView.vue'
 
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
-import RegisterLayout from '@/layouts/RegisterLayout.vue'
 import RegisterStudentView from '@/views/RegisterStudentView.vue'
 import RegisterStuffView from '@/views/RegisterStuffView.vue'
 import CreateLessonView from '@/views/CreateLessonView.vue'
