@@ -36,6 +36,7 @@ import SelectItem from '@/components/ui/select/SelectItem.vue'
 import SelectValue from '@/components/ui/select/SelectValue.vue'
 import Textarea from '@/components/ui/textarea/Textarea.vue'
 import { classSelectValues } from '@/utils/selectValues'
+import { useRouter } from 'vue-router'
 
 const scheduleStore = useScheduleStore()
 
@@ -50,6 +51,12 @@ const authStore = useAuthStore()
 const hasRights = computed(() => {
   return authStore.isTeacher || authStore.isHeadteacher
 })
+
+const router = useRouter()
+function goToGrades() {
+  scheduleStore.setGradeItem(props.scheduleItem)
+  router.push({ name: 'grades' })
+}
 
 const isDeleteDialogOpen = ref(false)
 function handleDeleteHomework() {
@@ -93,7 +100,7 @@ function handleUpdateHomework() {
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <DropdownMenuItem>
+      <DropdownMenuItem @click="goToGrades">
         Выставить оценку
       </DropdownMenuItem>
       <DropdownMenuSeparator />

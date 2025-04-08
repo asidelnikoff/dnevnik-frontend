@@ -1,6 +1,5 @@
 import type { Response } from "../types/response";
-import type { Schedule } from "../types/shedule";
-import type { Student } from "../types/users";
+import type { Schedule, ScheduleGradeItem } from "../types/shedule";
 import { mockStudents, mockStuff, mockTeachers } from "./usersService";
 
 export type GetScheduleParams = {
@@ -38,11 +37,7 @@ export type UpdateScheduleParams = {
 }
 export type UpdateScheduleResponse = Schedule
 
-export type GetScheduleGradesResponse = Array<{
-  student: Student,
-  lessonGrade: number | null,
-  homeworkGrade: number | null,
-}>
+export type GetScheduleGradesResponse = ScheduleGradeItem[]
 
 export type UpdateScheduleGradesParams = Array<{
   studentId: string,
@@ -70,8 +65,10 @@ const mockSchedule: Schedule[] = [
     teacher: mockTeachers[0],
     class: '10А',
     homework: 'п.5 + таблица',
-    lessonGrade: 5,
-    homeworkGrade: 5 
+    grades: [{
+      grade: 5,
+      comment: 'test'
+    }]
   },
   {
     id: '2',
@@ -83,8 +80,10 @@ const mockSchedule: Schedule[] = [
     subject: 'Математика',
     teacher: mockStuff[0],
     class: '7Б',
-    lessonGrade: 5,
-    homeworkGrade: 5 
+    grades: [{
+      grade: 5,
+      comment: 'test'
+    }]
   },
   {
     id: '3',
@@ -97,8 +96,10 @@ const mockSchedule: Schedule[] = [
     teacher: mockStuff[1],
     class: '5В',
     homework: 'конспект',
-    lessonGrade: 5,
-    homeworkGrade: 5 
+    grades: [{
+      grade: 5,
+      comment: 'test'
+    }]
   },
 ]
 
@@ -195,8 +196,12 @@ const scheduleService = {
       data: [
         {
           student: mockStudents[0],
-          lessonGrade: 5,
-          homeworkGrade: 5
+          grades: [
+            {
+              grade: 5,
+              comment: 'Молодец!'
+            }
+          ] 
         }
       ],
       status: 200
