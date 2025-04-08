@@ -7,10 +7,10 @@ import LoginView from '@/views/LoginView.vue'
 
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
-import RegisterLayout from '@/layouts/RegisterLayout.vue'
 import RegisterStudentView from '@/views/RegisterStudentView.vue'
 import RegisterStuffView from '@/views/RegisterStuffView.vue'
 import CreateLessonView from '@/views/CreateLessonView.vue'
+import GradesView from '@/views/GradesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,19 +31,19 @@ const router = createRouter({
       path: '/register-student',
       name: 'registerStudent',
       component: RegisterStudentView,
-      meta: { layout: RegisterLayout },
+      meta: { layout: MainLayout },
     },
     {
       path: '/register-stuff',
       name: 'registerStuff',
       component: RegisterStuffView,
-      meta: { layout: RegisterLayout },
+      meta: { layout: MainLayout },
     },
     {
       path: '/create-lesson',
       name: 'createLesson',
       component: CreateLessonView,
-      meta: { layout: RegisterLayout },
+      meta: { layout: MainLayout },
     },
     //
     // Main pages
@@ -53,6 +53,12 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: { layout: MainLayout }
+    },
+    {
+      path: '/grades',
+      name: 'grades',
+      component: GradesView,
+      meta: { layout: MainLayout },
     },
     {
       path: '/students',

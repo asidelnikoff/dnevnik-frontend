@@ -1,4 +1,4 @@
-import scheduleService, { type GetScheduleParams, type GetScheduleResponse, type UpdateScheduleHomeworkParams } from '@/api/services/scheduleService';
+import scheduleService, { type GetScheduleGradesResponse, type GetScheduleParams, type GetScheduleResponse, type UpdateScheduleHomeworkParams } from '@/api/services/scheduleService';
 import type { Response } from '@/api/types/response';
 import type { ScheduleExtended } from '@/api/types/shedule';
 import { getFullName } from '@/utils/getFullName';
@@ -48,14 +48,28 @@ export const useScheduleStore = defineStore('schedule', () => {
     return response; 
   }
 
+  const gradeItem = ref<ScheduleExtended>();
+  function setGradeItem(scheduleItem: ScheduleExtended): void {
+    gradeItem.value = scheduleItem;
+  }
+
+  function getScheduleGrades(id: string): Response<GetScheduleGradesResponse> {
+    const response = scheduleService.getScheduleGrades(id)
+    return response
+  }
+
   return {
     schedule,
     date,
+    gradeItem,
 
     getDate,
 
     getSchedule,
     deleteScheduleHomework,
     updateScheduleHomework,
+
+    getScheduleGrades,
+    setGradeItem
   }
 })

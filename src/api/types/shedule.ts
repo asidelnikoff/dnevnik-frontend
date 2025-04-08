@@ -1,4 +1,14 @@
-import type { Stuff } from "./users"
+import type { Student, Stuff } from "./users"
+
+export type Grade = {
+  grade: number,
+  comment: string,
+}
+
+export type ScheduleGradeItem = {
+  student: Student,
+  grades: Grade[]
+}
 
 export type Schedule = {
   id: string,
@@ -11,8 +21,7 @@ export type Schedule = {
   teacher: Stuff,
   class: string,
   homework?: string,
-  lessonGrade?: number,
-  homeworkGrade?: number
+  grades?: Grade[]
 }
 
 export type ScheduleExtended = Schedule & {
