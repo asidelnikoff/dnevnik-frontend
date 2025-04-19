@@ -1,5 +1,5 @@
 
-import type { CreateTeacherParams, CreateTeacherResponse, GetStuffParams, GetStuffResponse } from '@/api/services/usersService';
+import type { CreateTeacherParams, CreateTeacherResponse, DeleteTeacherParams, GetStuffParams, GetStuffResponse } from '@/api/services/usersService';
 import userService from '@/api/services/usersService';
 import type { Stuff } from '@/api/types/users';
 import type { Response } from '@/api/types/response';
@@ -24,10 +24,21 @@ export const useStuffStore = defineStore('stuff', () => {
     return response
   }
 
+  function deleteTeacher(params: DeleteTeacherParams): Response<undefined> {
+    const response = userService.deleteTeacher(params)
+
+    if (response.status === 200) {
+      stuff.value = stuff.value.filter(stuff => stuff.id !== params.id)
+    }
+
+    return response
+  }
+
   return {
     stuff,
 
     getStuff,
     createTeacher,
+    deleteTeacher,
   }
 })

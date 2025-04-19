@@ -1,4 +1,4 @@
-import userService, { type CreateStudentParams, type CreateStudentResponse, type GetStudentsParams, type GetStudentsResponse } from '@/api/services/usersService';
+import userService, { type CreateStudentParams, type CreateStudentResponse, type DeleteStudentParams, type GetStudentsParams, type GetStudentsResponse } from '@/api/services/usersService';
 import type { Student } from '@/api/types/users'
 import type { Response } from '@/api/types/response';
 import { defineStore } from 'pinia'
@@ -22,10 +22,22 @@ export const useStudentsStore = defineStore('students', () => {
     return response
   }
 
+  function deleteStudent(params: DeleteStudentParams): Response<undefined> {
+    const response = userService.deleteStudent(params)
+
+    if (response.status === 200) {
+      console.log(200)
+      students.value = students.value.filter(student => student.id !== params.id)
+    }
+
+    return response
+  }
+
   return {
     students, 
 
     getStudents,
     createStudent,
+    deleteStudent,
   }
 })

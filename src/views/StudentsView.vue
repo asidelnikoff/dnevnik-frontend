@@ -4,7 +4,6 @@ import { onBeforeMount, ref, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useStudentsStore } from '@/stores/students';
 
-import { type Student } from '@/api/types/users';
 import { type GetStudentsParams } from '@/api/services/usersService';
 
 import { Button } from '@/components/ui/button'
@@ -24,13 +23,9 @@ watch(params, () => {
   deep: true
 })
 
-const students = ref<Student[]>([])
 const studentsStore = useStudentsStore()
 function getStudents() {
-  const response = studentsStore.getStudents(params.value)
-  if (response.status === 200) {
-    students.value = response.data
-  }
+  studentsStore.getStudents(params.value)
 }
 
 onBeforeMount(() => {
@@ -41,7 +36,7 @@ onBeforeMount(() => {
 <template>
   <div class="w-5/10">
     <StudentsFilters v-model:search="params.search" />
-    <StudentsTable :students />
+    <StudentsTable :students="studentsStore.students" />
     <div
       v-if="true"
       class="w-fit mt-3 ml-auto"

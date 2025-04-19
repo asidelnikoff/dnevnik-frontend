@@ -32,6 +32,14 @@ export type CreateStudentParams = LoginParams & {
 }
 export type CreateStudentResponse = Student
 
+export type DeleteStudentParams = {
+  id: string;
+}
+
+export type DeleteTeacherParams = {
+  id: string;
+}
+
 export type CreateTeacherParams = LoginParams & {
   name: string;
   lastName: string;
@@ -40,7 +48,7 @@ export type CreateTeacherParams = LoginParams & {
 }
 export type CreateTeacherResponse = Teacher
 
-export const mockStudents: Student[] = [
+export let mockStudents: Student[] = [
   {
     id: '1',
     name: 'Иван',
@@ -57,7 +65,7 @@ export const mockStudents: Student[] = [
   },
 ]
 
-export const mockTeachers: Teacher[] = [
+export let mockTeachers: Teacher[] = [
   {
     id: '1',
     name: 'Петр',
@@ -67,7 +75,7 @@ export const mockTeachers: Teacher[] = [
   },
 ]
 
-export const mockStuff: Stuff[] = [
+export let mockStuff: Stuff[] = [
   ...mockTeachers,
   {
     id: '2',
@@ -143,6 +151,33 @@ const userService = {
     mockStudents.push(mockStudent)
     return {
       data: mockStudent,
+      status: 200
+    }
+  },
+
+  /*
+  DELETE /users/students/{id} - requires token
+  */
+  deleteStudent(params: DeleteStudentParams): Response<undefined> {
+    console.log(params)
+    
+    mockStudents = mockStudents.filter(student => student.id !== params.id)
+    return {
+      data: undefined,
+      status: 200
+    }
+  },
+
+  /*
+  DELETE /users/teachers/{id} - requires token
+  */
+  deleteTeacher(params: DeleteTeacherParams): Response<undefined> {
+    console.log(params)
+    
+    mockTeachers = mockTeachers.filter(teacher => teacher.id !== params.id)
+    mockStuff = mockStuff.filter(teacher => teacher.id !== params.id)
+    return {
+      data: undefined,
       status: 200
     }
   },

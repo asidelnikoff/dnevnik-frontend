@@ -4,6 +4,20 @@ import type { PropType } from 'vue';
 import { getFullName } from '@/utils/getFullName'
 
 import type { Student } from '@/api/types/users';
+import Button from '@/components/ui/button/Button.vue';
+import { Trash2 } from 'lucide-vue-next';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 import {
   Table,
@@ -13,7 +27,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useStudentsStore } from '@/stores/students';
+import { useAuthStore } from '@/stores/auth';
 
+const studentsStore = useStudentsStore()
+const authStore = useAuthStore()
 defineProps({
   students: {
     type: Array as PropType<Student[]>,
@@ -39,6 +57,42 @@ defineProps({
         <TableCell> {{ student.id }} </TableCell>
         <TableCell>{{ getFullName(student) }}</TableCell>
         <TableCell>{{ student.class }}</TableCell>
+        <TableCell
+          v-if="authStore.isHeadteacher"
+          class="w-4"
+        >
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <Button
+                class="rounded-full"
+                type="button"
+                variant="ghost"
+                size="icon"
+              >
+                <Trash2 class="w-4 h-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Удалить ученика?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  <div>Вы действительно хотите <b>удалить</b> ученика?</div>
+                  <br>
+                  <div><b>ФИО: </b>{{ getFullName(student) }}</div>
+                  <div><b>Класс: </b>{{ student.class }}</div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Отмена</AlertDialogCancel>
+                <AlertDialogAction
+                  @click="studentsStore.deleteStudent({id: student.id})"
+                >
+                  Удалить
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent> 
+          </AlertDialog>
+        </TableCell>
       </TableRow>
     </TableBody>
   </Table> 
