@@ -3,6 +3,7 @@ import router from '@/router'
 
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
+import { RefreshCcw } from 'lucide-vue-next'
 import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -28,12 +29,13 @@ import { toast } from 'vue-sonner'
 // Form select values
 //
 import { classSelectValues } from '@/utils/selectValues'
+import { generateLogin, generatePassword } from '@/utils/generateRegisterData'
 //
 // Form schema and validations
 //
 const formSchema = toTypedSchema(z.object({
-  login: z.string({ message: 'Введите логин'}),
-  password: z.string({ message: 'Введите пароль'}),
+  login: z.string({ message: 'Введите логин'}).default(generateLogin()),
+  password: z.string({ message: 'Введите пароль'}).default(generatePassword()),
 
   name: z.string({ message: 'Введите фамилию'}),
   lastName: z.string({ message: 'Введите имя'}),
@@ -45,6 +47,11 @@ const form = useForm({
   validationSchema: formSchema,
   keepValuesOnUnmount: true,
 })
+
+function generateRegisterData(): void {
+  form.setFieldValue("login", generateLogin())
+  form.setFieldValue("password", generatePassword())
+}
 //
 // Submit action
 //
@@ -97,6 +104,16 @@ const onSubmit = form.handleSubmit((values) => {
           <FormMessage />
         </FormItem>
       </FormField>
+
+      <Button
+        class="rounded-full mt-auto"
+        type="button"
+        variant="ghost"
+        size="icon"
+        @click="generateRegisterData"
+      >
+        <RefreshCcw class="w-4 h-4" />
+      </Button>
     </div>
     <div class="flex gap-5">
       <FormField
