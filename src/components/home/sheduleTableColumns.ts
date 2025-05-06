@@ -1,20 +1,30 @@
 import { type ColumnDef } from '@tanstack/vue-table'
 import { h } from 'vue';
 import ScheduleTableMenu from './ScheduleTableMenu.vue';
-import type { ScheduleExtended } from '@/api/types/shedule';
 import { useAuthStore } from '@/stores/auth';
+import type { GetScheduleResponse } from '@/api/services/scheduleService';
+import { getFullName } from '@/utils/getFullName';
+import type { Grade } from '@/api/types/shedule';
+import GradeItem from './GradeItem.vue';
+import HomeworkItem from './HomeworkItem.vue';
 
 // Here are defined table items.
 // header() and cell() are render functions of a column.
 // You can access row value with row.getValue()
-export const scheduleTableColumns: ColumnDef<ScheduleExtended>[] = [
+export const scheduleTableColumns: ColumnDef<GetScheduleResponse[number]>[] = [
   {
-    accessorKey: 'startTime',
+    accessorKey: 'start_time',
     header: () => null,
+    cell: ({row}) => {
+      return h('div', {title: 'Время начала'}, row.getValue('start_time'))
+    }
   },
   {
     accessorKey: 'subject',
     header: () => null,
+    cell: ({row}) => {
+      return h('div', {title: 'Предмет'}, row.getValue('subject'))
+    }
   },
   {
     accessorKey: 'class',
@@ -22,32 +32,44 @@ export const scheduleTableColumns: ColumnDef<ScheduleExtended>[] = [
     cell: ({row}) => {
       const authStore = useAuthStore()
       if(!(authStore.isTeacher || authStore.isHeadteacher)) return null
-      return h('div', {}, row.getValue('class'))
+      return h('div', {title: 'Класс'}, row.getValue('class'))
     }
   },
   {
-    accessorKey: 'teacherFullName',
+    accessorKey: 'teacher',
     header: () => null,
     cell: ({row}) => {
       const authStore = useAuthStore()
       if(authStore.isTeacher || authStore.isHeadteacher) return null
-      return h('div', {}, row.getValue('teacherFullName'))
+      return h('div', {title: 'Учитель'}, getFullName(row.getValue('teacher')))
     }
   },
   {
     accessorKey: 'homework',
     header: () => null,
     cell: ({row}) => {
-      return h('div', { class: 'w-25 overflow-hidden whitespace-nowrap text-ellipsis'}, row.getValue('homework'))
+      if(!row.getValue('homework')) return null
+      return h('div', {}, h(HomeworkItem, {
+        homework: row.getValue('homework') as string
+      }))
     }
   },
   {
-    accessorKey: 'lessonGrade',
+    accessorKey: 'grades',
     header: () => null,
     cell: ({row}) => {
       const authStore = useAuthStore()
       if(authStore.isTeacher || authStore.isHeadteacher) return null
-      return h('div', {}, row.getValue('lessonGrade'))
+      const grades = row.getValue('grades') as Array<Grade>
+    
+      return h('div', 
+        { class: 'flex gap-1' }, 
+        grades.map(grade => 
+          h('div', {}, h(GradeItem, {
+            grade
+          }))
+        )
+      )
     }
   },
   {
@@ -61,10 +83,10 @@ export const scheduleTableColumns: ColumnDef<ScheduleExtended>[] = [
   },
   {
     id: 'actions',
-    enableHiding: false,
     cell: ({ row }) => {
       const scheduleItem = row.original
-
+      const authStore = useAuthStore()
+      if (authStore.isStudent) return null
       return h('div', { class: 'relative' }, h(ScheduleTableMenu, {
         scheduleItem,
       }))

@@ -19,7 +19,6 @@ import {
 import Label from '@/components/ui/label/Label.vue'
 import Input from '@/components/ui/input/Input.vue'
 
-import type { ScheduleExtended } from '@/api/types/shedule'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/auth'
@@ -37,12 +36,13 @@ import SelectValue from '@/components/ui/select/SelectValue.vue'
 import Textarea from '@/components/ui/textarea/Textarea.vue'
 import { classSelectValues } from '@/utils/selectValues'
 import { useRouter } from 'vue-router'
+import type { GetScheduleResponse } from '@/api/services/scheduleService'
 
 const scheduleStore = useScheduleStore()
 
 const props = defineProps({
   scheduleItem: {
-    type: Object as PropType<ScheduleExtended>,
+    type: Object as PropType<GetScheduleResponse[number]>,
     required: true,
   }
 })
@@ -54,33 +54,34 @@ const hasRights = computed(() => {
 
 const router = useRouter()
 function goToGrades() {
-  scheduleStore.setGradeItem(props.scheduleItem)
-  router.push({ name: 'grades' })
+  router.push({
+    name: 'grades',
+    params: {
+      id: props.scheduleItem.id
+    }
+  })
 }
 
 const isDeleteDialogOpen = ref(false)
-function handleDeleteHomework() {
-  const response = scheduleStore.deleteScheduleHomework(props.scheduleItem.id)
-  if (response.status === 200) {
+async function handleDeleteHomework() {
+  try {
+    await scheduleStore.deleteScheduleHomework(props.scheduleItem.id)
     toast('Домашнее задание удалено')
     isDeleteDialogOpen.value = false
-    return
-  } else {
+  } catch {
     toast('Не удалось удалить домашнее задание')
   }
 }
 
 const isEditDialogOpen = ref(false)
 const homework = ref<string>(props.scheduleItem.homework || '')
-function handleUpdateHomework() {
-  const response = scheduleStore.updateScheduleHomework(props.scheduleItem.id, {
-    homework: homework.value
-  })
-  if (response.status === 200) {
+async function handleUpdateHomework() {
+  try {
+    await scheduleStore.updateScheduleHomework(props.scheduleItem.id, {
+      homework: homework.value
+    })
     toast('Домашнее задание обновлено')
-    isEditDialogOpen.value = false
-    return
-  } else {
+  } catch {
     toast('Не удалось обновить домашнее задание')
   }
 }

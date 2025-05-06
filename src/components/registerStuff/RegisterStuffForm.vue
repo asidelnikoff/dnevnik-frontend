@@ -38,9 +38,9 @@ const formSchema = toTypedSchema(z.object({
   login: z.string({ message: 'Введите логин'}).default(generateLogin()),
   password: z.string({ message: 'Введите пароль'}).default(generatePassword()),
 
-  name: z.string({ message: 'Введите фамилию'}),
-  lastName: z.string({ message: 'Введите имя'}),
-  middleName: z.string().optional(),
+  first_name: z.string({ message: 'Введите фамилию'}),
+  last_name: z.string({ message: 'Введите имя'}),
+  middle_name: z.string({ message: 'Введите имя'}),
 
   role: z.string({ message: 'Выберите должность'}).default(roleSelectValues[0].value),
   subject: z.string({ message: 'Выберите предмет'}),
@@ -58,15 +58,16 @@ function generateRegisterData(): void {
 // Submit action
 //
 const stuffStore = useStuffStore()
-const onSubmit = form.handleSubmit((values) => {
+const onSubmit = form.handleSubmit(async (values) => {
   const params = values
-  const response = stuffStore.createTeacher(params)
-  if (response.status === 200) {
+
+  try {
+    await stuffStore.createTeacher(params)
     toast('Учитель успешно добавлен')
     router.replace({ name: 'stuff' })
-    return;
+  } catch {
+    toast('Не удалось добавить учителя')
   }
-  toast('Не удалось добавить учителя')
 })
 </script>
 
@@ -121,7 +122,7 @@ const onSubmit = form.handleSubmit((values) => {
     <div class="flex gap-5">
       <FormField
         v-slot="{ componentField }"
-        name="lastName"
+        name="last_name"
       >
         <FormItem>
           <FormLabel><span>Фамилия<sup>*</sup></span></FormLabel>
@@ -137,7 +138,7 @@ const onSubmit = form.handleSubmit((values) => {
 
       <FormField
         v-slot="{ componentField }"
-        name="name"
+        name="first_name"
       >
         <FormItem>
           <FormLabel><span>Имя<sup>*</sup></span></FormLabel>
@@ -153,10 +154,10 @@ const onSubmit = form.handleSubmit((values) => {
 
       <FormField
         v-slot="{ componentField }"
-        name="middleName"
+        name="middle_name"
       >
         <FormItem>
-          <FormLabel>Отчество</FormLabel>
+          <FormLabel><span>Отчество<sup>*</sup></span></FormLabel>
           <FormControl>
             <Input
               type="text"

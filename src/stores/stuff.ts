@@ -1,36 +1,27 @@
 
-import type { CreateTeacherParams, CreateTeacherResponse, DeleteTeacherParams, GetStuffParams, GetStuffResponse } from '@/api/services/usersService';
+import type { CreateTeacherParams, CreateTeacherResponse, GetStuffParams, GetStuffResponse } from '@/api/services/usersService';
 import userService from '@/api/services/usersService';
-import type { Stuff } from '@/api/types/users';
 import type { Response } from '@/api/types/response';
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useStuffStore = defineStore('stuff', () => {
-  const stuff = ref<Stuff[]>([]);
+  const stuff = ref<GetStuffResponse>([]);
 
-  function getStuff(params: GetStuffParams): Response<GetStuffResponse>{
-    const response = userService.getStuff(params)
-    if (response.status === 200) {
-      stuff.value = response.data
-    }
-
+  async function getStuff(params: GetStuffParams): Promise<Response<GetStuffResponse>> {
+    const response = await userService.getStuff(params)
+    stuff.value = response.data;
     return response
   }
 
-  function createTeacher(params: CreateTeacherParams): Response<CreateTeacherResponse> {
-    const response = userService.createTeacher(params)
-
+  async function createTeacher(params: CreateTeacherParams): Promise<Response<CreateTeacherResponse>> {
+    const response = await userService.createTeacher(params)
     return response
   }
 
-  function deleteTeacher(params: DeleteTeacherParams): Response<undefined> {
-    const response = userService.deleteTeacher(params)
-
-    if (response.status === 200) {
-      stuff.value = stuff.value.filter(stuff => stuff.id !== params.id)
-    }
-
+  async function deleteTeacher(id: string): Promise<Response<undefined>> {
+    const response = await userService.deleteTeacher(id)
+    stuff.value = stuff.value.filter(stuff => stuff.id !== id)
     return response
   }
 

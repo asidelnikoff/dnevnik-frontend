@@ -23,3 +23,15 @@ export function getScheduleTableHeader(dateString: string): string {
   const monthName = monthsNames[month - 1]
   return `${dayNames[weekDay]}, ${day} ${monthName}`
 }
+
+export function transformApiDateToWeekDay(dateString: string) {
+  const parts = dateString.split('-')
+  const year = Number(parts[0])
+  const month = Number(parts[1])
+  const day = Number(parts[2])
+
+  const date = new Date(year, month, day)
+  const weekDay = date.getDay()
+
+  return `${dayNames[weekDay]} (${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')})`
+}

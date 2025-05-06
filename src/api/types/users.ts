@@ -1,24 +1,25 @@
 export type User = {
   id: string,
-  name: string,
-  lastName: string,
-  middleName?: string,
-  role: string,
+  login?: string,
+  first_name: string,
+  last_name: string,
+  middle_name?: string,
+  role: "student" | "teacher" | "headteacher",
 }
 
 export type Student = User & {
-  role: 'Ученик',
+  role: "student",
   class: string;
 }
 
 export type Teacher = User & {
-  role: 'Учитель',
+  role: "teacher",
   subject: string;
 }
 
 export type HeadTeacher = User & {
   subject: string;
-  role: 'Заведующий учебной частью'
+  role: "headteacher" 
 }
 
 export type Stuff = Teacher | HeadTeacher

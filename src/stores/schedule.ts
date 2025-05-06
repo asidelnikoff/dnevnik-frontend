@@ -1,75 +1,60 @@
-import scheduleService, { type GetScheduleGradesResponse, type GetScheduleParams, type GetScheduleResponse, type UpdateScheduleHomeworkParams } from '@/api/services/scheduleService';
+import scheduleService, { type GetScheduleParams, type GetScheduleResponse, type UpdateScheduleHomeworkParams } from '@/api/services/scheduleService';
 import type { Response } from '@/api/types/response';
-import type { ScheduleExtended } from '@/api/types/shedule';
-import { getFullName } from '@/utils/getFullName';
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 export const useScheduleStore = defineStore('schedule', () => {
-  const schedule = ref<ScheduleExtended[]>([]);
+  const schedule = ref<GetScheduleResponse>([]);
   const date = ref('')
 
-  const getDate = computed(() => date.value)
+  const getDate = computed(() => {
+    const dateItems = date.value.split('-');
+    return dateItems[2] + '.' + dateItems[1] + '.' + dateItems[0]
+  })
 
-  function getSchedule(params: GetScheduleParams): Response<ScheduleExtended[]>{
-    const response = scheduleService.getSchedule(params)
+  function findById(id: string) {
+    return schedule.value.find(scheduleItem => scheduleItem.id === id)
+  }
 
-    if (response.status === 200) {
-      if (params.date) {
-        date.value = params.date
+  async function getSchedule(params: GetScheduleParams): Promise<Response<GetScheduleResponse>>{
+    date.value = params.startDate || '';
+    schedule.value = []
+    const response = await scheduleService.getSchedule(params)
+    schedule.value = response.data
+    return response
+  }
+
+  async function deleteScheduleHomework(id: string): Promise<Response<undefined>> {
+    const response = await scheduleService.deleteScheduleHomework(id)
+    schedule.value = schedule.value.map(schedule => {
+      if (schedule.id === id) {
+        delete schedule.homework
       }
-      schedule.value = response.data.map(scheduleItem => {
-        return {
-          ...scheduleItem,
-          teacherFullName: getFullName(scheduleItem.teacher)
-        }
-      })
-    }
-
-    return {
-      data: schedule.value,
-      status: response.status
-    }
+      return schedule
+    })
+    return response
   }
 
-  function deleteScheduleHomework(id: string): Response<undefined | GetScheduleResponse> {
-    const response = scheduleService.deleteScheduleHomework(id)
-    if (response.status === 200) {
-      return getSchedule({ date: date.value })
-    }
-    return response; 
-  }
-
-  function updateScheduleHomework(id: string, params: UpdateScheduleHomeworkParams): Response<undefined | GetScheduleResponse> {
-    const response = scheduleService.updateScheduleHomework(id, params)
-    if (response.status === 200) {
-      return getSchedule({ date: date.value })
-    }
-    return response; 
-  }
-
-  const gradeItem = ref<ScheduleExtended>();
-  function setGradeItem(scheduleItem: ScheduleExtended): void {
-    gradeItem.value = scheduleItem;
-  }
-
-  function getScheduleGrades(id: string): Response<GetScheduleGradesResponse> {
-    const response = scheduleService.getScheduleGrades(id)
+  async function updateScheduleHomework(id: string, params: UpdateScheduleHomeworkParams): Promise<Response<undefined>> {
+    const response = await scheduleService.updateScheduleHomework(id, params)
+    schedule.value = schedule.value.map(item => {
+      if (item.id === id) {
+        item.homework = params.homework
+      }
+      return item
+    })
     return response
   }
 
   return {
     schedule,
     date,
-    gradeItem,
 
+    findById,
     getDate,
 
     getSchedule,
     deleteScheduleHomework,
     updateScheduleHomework,
-
-    getScheduleGrades,
-    setGradeItem
   }
 })

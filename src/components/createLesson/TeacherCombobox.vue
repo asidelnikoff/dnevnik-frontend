@@ -4,18 +4,20 @@ import { Combobox, ComboboxAnchor, ComboboxEmpty, ComboboxGroup, ComboboxInput, 
 import { Check, Search } from 'lucide-vue-next'
 import { useStuffStore } from '@/stores/stuff'
 import { computed, onMounted, ref } from 'vue'
-import type { Stuff } from '@/api/types/users'
-import { getFullName } from '@/utils/getFullName'
 import Label from '../ui/label/Label.vue'
+import type { GetStuffResponse } from '@/api/services/usersService'
+import { toast } from 'vue-sonner'
 
 defineEmits(['change'])
 
-const stuff = ref<Stuff[]>([])
+const stuff = ref<GetStuffResponse>([])
 const stuffStore = useStuffStore()
-onMounted(() => {
-  const response = stuffStore.getStuff({})
-  if (response.status === 200) {
+onMounted(async () => {
+  try {
+    const response = await stuffStore.getStuff({})
     stuff.value = response.data
+  } catch {
+    toast('Не удалось получить список учителей')
   }
 })
 
@@ -23,7 +25,7 @@ const stuffSelectValues = computed(() => {
   return stuff.value.map(stuffMember => {
     return {
       value: stuffMember.id,
-      label: `${getFullName(stuffMember)}, ${stuffMember.subject}`
+      label: `${stuffMember.full_name}, ${stuffMember.subject}`
     }
   })
 })

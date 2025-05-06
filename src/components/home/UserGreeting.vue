@@ -7,12 +7,12 @@ const greeting = computed(() => {
   if (!authStore?.user?.role) {
     return 'Здравствуйте!'
   }
-  if (authStore.user.role === 'Ученик') {
-    return `Привет, ${authStore.user.name}!` 
-  } else if (authStore.user.middleName) {
-    return `Добрый день, ${authStore.user.name + ' ' + authStore.user.middleName}!` 
+  if (authStore.user.role === 'student') {
+    return `Привет, ${authStore.getName}!` 
+  } else if (authStore.getMiddleName) {
+    return `Добрый день, ${authStore.getName + ' ' + authStore.getMiddleName}!` 
   } else {
-    return `Добрый день, ${authStore.user.name}!`
+    return `Добрый день, ${authStore.getName}!`
   }
 })
 </script>

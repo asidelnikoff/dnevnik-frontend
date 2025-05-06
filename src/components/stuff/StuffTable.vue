@@ -1,9 +1,8 @@
 <script setup lang='ts'>
 import { type PropType } from 'vue'
 
-import type { Stuff } from '@/api/types/users'
+import RoleBadge from './RoleBadge.vue'
 
-import { getFullName } from '@/utils/getFullName'
 import Button from '@/components/ui/button/Button.vue'
 import { Trash2 } from 'lucide-vue-next'
 
@@ -29,18 +28,35 @@ import {
 } from '@/components/ui/table'
 import { useAuthStore } from '@/stores/auth'
 import { useStuffStore } from '@/stores/stuff'
+import type { GetStuffResponse } from '@/api/services/usersService'
+import { toast } from 'vue-sonner'
 
 const authStore = useAuthStore()
 const stuffStore = useStuffStore()
 defineProps({
   stuff: {
-    type: Array as PropType<Stuff[]>,
+    type: Array as PropType<GetStuffResponse>,
     required: true,
   }
 })
+
+async function deleteTeacher(id: string): Promise<void> {
+ try {
+  await stuffStore.deleteTeacher(id)
+  toast('Учитель успешно удален')
+ } catch {
+  toast('Не удалось удалить учителя')
+ }
+}
 </script>
 <template>
-  <Table>
+  <div
+    v-if="stuff.length === 0"
+    class="mt-1 text-center"
+  >
+    Сотрудники отсутствуют
+  </div>
+  <Table v-else>
     <TableHeader class="w-full">
       <TableRow>
         <TableHead>#</TableHead>
@@ -52,18 +68,20 @@ defineProps({
 
     <TableBody class="w-full">
       <TableRow
-        v-for="stuff in stuff"
-        :key="stuff.id"
+        v-for="(stuffMember, id) in stuff"
+        :key="stuffMember.id"
+        class="h-12"
       >
-        <TableCell> {{ stuff.id }} </TableCell>
-        <TableCell>{{ getFullName(stuff) }}</TableCell>
-        <TableCell>{{ stuff.subject }}</TableCell>
-        <TableCell>{{ stuff.role }}</TableCell>
+        <TableCell> {{ id + 1 }} </TableCell>
+        <TableCell>{{ stuffMember.full_name }}</TableCell>
+        <TableCell>{{ stuffMember.subject }}</TableCell>
+        <TableCell><RoleBadge :role="stuffMember.role" /></TableCell>
         <TableCell
-          v-if="authStore.isHeadteacher && stuff.role !== 'Заведующий учебной частью'"
           class="w-4"
         >
-          <AlertDialog>
+          <AlertDialog 
+            v-if="authStore.isHeadteacher && stuffMember.role !== 'headteacher'"
+          >
             <AlertDialogTrigger>
               <Button
                 class="rounded-full"
@@ -71,7 +89,9 @@ defineProps({
                 variant="ghost"
                 size="icon"
               >
-                <Trash2 class="w-4 h-4" />
+                <Trash2
+                  class="w-4 h-4"
+                />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -80,15 +100,15 @@ defineProps({
                 <AlertDialogDescription>
                   <div>Вы действительно хотите <b>удалить</b> учителя?</div>
                   <br>
-                  <div><b>ФИО: </b>{{ getFullName(stuff) }}</div>
-                  <div><b>Урок: </b>{{ stuff.subject }}</div>
-                  <div><b>Должность: </b>{{ stuff.role }}</div>
+                  <div><b>ФИО: </b>{{ stuffMember.full_name }}</div>
+                  <div><b>Урок: </b>{{ stuffMember.subject }}</div>
+                  <div><b>Должность: </b>{{ stuffMember.role === 'teacher' ? 'Учитель' : 'Заведующий учебной частью' }}</div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Отмена</AlertDialogCancel>
                 <AlertDialogAction
-                  @click="stuffStore.deleteTeacher({id: stuff.id})"
+                  @click="deleteTeacher(stuffMember.id)"
                 >
                   Удалить
                 </AlertDialogAction>

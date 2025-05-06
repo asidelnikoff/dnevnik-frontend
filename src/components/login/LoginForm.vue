@@ -7,7 +7,7 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 
-import { Button } from '@/components/ui/button'
+import AButton from '@/components/common/AButton.vue'
 import {
   FormControl,
   FormField,
@@ -19,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import { toast } from 'vue-sonner'
+import { ref } from 'vue'
 //
 // Form schema and validations
 //
@@ -33,19 +34,23 @@ const form = useForm({
 //
 // Submit action
 //
+const loading = ref(false)
 const authStore = useAuthStore()
-const onSubmit = form.handleSubmit((values) => {
+const onSubmit = form.handleSubmit(async (values) => {
   const loginParams = {
     login: values.login,
     password: values.password
   }
-  const response = authStore.login(loginParams, values.rememberMe)
-  if (response.status === 200) {
+
+  loading.value = true
+  try {
+    await authStore.login(loginParams, values.rememberMe)
     router.replace({name: 'home'})
     toast('Авторизация прошла успешно')
-    return;
+  } catch {
+    toast('Не удалось авторизоваться')
   }
-  toast('Не удалось авторизоваться')
+  loading.value = false
 })
 </script>
 
@@ -104,11 +109,12 @@ const onSubmit = form.handleSubmit((values) => {
       </FormItem>
     </FormField>
 
-    <Button
+    <AButton
       class="w-100 mt-15"
       type="submit"
+      :loading
     >
       Вход
-    </Button>
+    </AButton>
   </form>
 </template>

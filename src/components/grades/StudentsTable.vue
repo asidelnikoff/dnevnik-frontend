@@ -1,9 +1,6 @@
 <script setup lang='ts'>
-import { ref, type PropType } from 'vue';
-
-import { getFullName } from '@/utils/getFullName'
-
-import type { Student } from '@/api/types/users';
+import { type PropType } from 'vue';
+import { getFullName } from '@/utils/getFullName';
 
 import {
   Table,
@@ -14,18 +11,16 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import GradesComponent from './GradesComponent.vue';
-import { type Grade } from '@/api/types/shedule';
-
-const grades = ref<Grade[]>([
-  {
-    grade: 5,
-    comment: 'test',
-  }
-])
+import type { ScheduleGradeItem } from '@/api/types/shedule';
+import { type GetScheduleResponse } from '@/api/services/scheduleService';
 
 defineProps({
-  students: {
-    type: Array as PropType<Student[]>,
+  gradeItems: {
+    type: Array as PropType<ScheduleGradeItem[]>,
+    required: true,
+  },
+  scheduleItem: {
+    type: Object as PropType<GetScheduleResponse[number]>,
     required: true,
   }
 })
@@ -42,13 +37,16 @@ defineProps({
 
     <TableBody class="w-full">
       <TableRow
-        v-for="student in students"
-        :key="student.id"
+        v-for="(item, id) in gradeItems"
+        :key="item.student.id"
       >
-        <TableCell> {{ student.id }} </TableCell>
-        <TableCell>{{ getFullName(student) }}</TableCell>
+        <TableCell> {{ id + 1 }} </TableCell>
+        <TableCell>{{ getFullName(item.student) }}</TableCell>
         <TableCell>
-          <GradesComponent :grades />
+          <GradesComponent
+            :student-id="item.student.id"
+            :schedule-item
+          />
         </TableCell>
       </TableRow>
     </TableBody>
