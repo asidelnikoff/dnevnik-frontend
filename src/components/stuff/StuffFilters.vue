@@ -4,8 +4,19 @@ import { Label } from '@/components/ui/label'
 
 import Button from '@/components/ui/button/Button.vue';
 
+import { X } from 'lucide-vue-next';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
 import { Funnel } from 'lucide-vue-next'
 import { useDebounceFn } from '@vueuse/core';
+import { subjectSelectValues } from '@/utils/selectValues';
 
 const lastName = defineModel<string>('lastName')
 const debouncedUpdateLastName = useDebounceFn((value: string) => {
@@ -19,6 +30,8 @@ const middleName = defineModel<string>('middleName')
 const debouncedUpdateMiddleName = useDebounceFn((value: string) => {
   middleName.value = value
 }, 1000)
+
+const subject = defineModel<string>('subject')
 </script>
 
 <template>
@@ -59,6 +72,39 @@ const debouncedUpdateMiddleName = useDebounceFn((value: string) => {
           placeholder="Введите отчество"
           @input="(event: Event) => debouncedUpdateMiddleName((event.target as HTMLInputElement).value)"
         />
+      </div>
+      <div>
+        <Label class="mb-1">Предмет</Label>
+        <div class="relative">
+          <Select
+            v-model="subject"
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Все" />
+            </SelectTrigger>
+            <SelectContent class="max-h-48">
+              <SelectGroup>
+                <SelectItem
+                  v-for="{ value, label} in subjectSelectValues"
+                  :key="value"
+                  :value="value"
+                >
+                  {{ label }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <button
+            v-if="subject !== ''"
+            type="button"
+            class="absolute -right-5 top-0 h-full flex items-center justify-center"
+            @click="subject = ''"
+          >
+            <X
+              class="size-4 text-muted-foreground hover:text-foreground transition-colors"
+            />
+          </button>
+        </div>
       </div>
     </div>
     <Button

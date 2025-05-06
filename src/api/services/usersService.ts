@@ -27,6 +27,7 @@ export type GetStudentsResponse = {
 }[]
 
 export type GetStuffParams = {
+  subject?: string;
   role?: 'teacher' | 'headteacher';
   firstName?: string;
   lastName?: string;

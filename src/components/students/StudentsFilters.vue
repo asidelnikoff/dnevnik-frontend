@@ -2,10 +2,21 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
+import { X } from 'lucide-vue-next';
+
 import Button from '@/components/ui/button/Button.vue';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 import { Funnel } from 'lucide-vue-next'
 import { useDebounceFn } from '@vueuse/core';
+import { classSelectValues } from '@/utils/selectValues';
 
 const lastName = defineModel<string>('lastName')
 const debouncedUpdateLastName = useDebounceFn((value: string) => {
@@ -19,6 +30,8 @@ const middleName = defineModel<string>('middleName')
 const debouncedUpdateMiddleName = useDebounceFn((value: string) => {
   middleName.value = value
 }, 1000)
+
+const className = defineModel<string>('className')
 </script>
 
 <template>
@@ -59,6 +72,42 @@ const debouncedUpdateMiddleName = useDebounceFn((value: string) => {
           placeholder="Введите отчество"
           @input="(event: Event) => debouncedUpdateMiddleName((event.target as HTMLInputElement).value)"
         />
+      </div>
+      <div>
+        <Label
+          class="mb-1"
+          for="middleName"
+        >Класс</Label>
+        <div class="relative">
+          <Select
+            v-model="className"
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Все" />
+            </SelectTrigger>
+            <SelectContent class="max-h-48">
+              <SelectGroup>
+                <SelectItem
+                  v-for="{ value, label} in classSelectValues"
+                  :key="value"
+                  :value="value"
+                >
+                  {{ label }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <button
+            v-if="className !== ''"
+            type="button"
+            class="absolute -right-5 top-0 h-full flex items-center justify-center"
+            @click="className = ''"
+          >
+            <X
+              class="size-4 text-muted-foreground hover:text-foreground transition-colors"
+            />
+          </button>
+        </div>
       </div>
     </div>
     <Button

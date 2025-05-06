@@ -19,6 +19,7 @@ const params = ref<GetStudentsParams>({
   firstName: '',
   lastName: '',
   middleName: '',
+  class: '',
 })
 watch(params, () => {
   getStudents();
@@ -45,11 +46,12 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="w-5/10">
+  <div class="min-w-6/10">
     <StudentsFilters
       v-model:first-name="params.firstName"
       v-model:last-name="params.lastName"
       v-model:middle-name="params.middleName"
+      v-model:class-name="params.class"
     />
 
     <ListSkeleton v-if="isLoading" />

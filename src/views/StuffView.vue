@@ -20,6 +20,7 @@ const params = ref<GetStuffParams>({
   firstName: '',
   lastName: '',
   middleName: '',
+  subject: ''
 })
 watch(params, () => {
   getStuff();
@@ -45,11 +46,12 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="w-5/10">
+  <div class="min-w-6/10">
     <StuffFilters
       v-model:first-name="params.firstName"
       v-model:last-name="params.lastName"
       v-model:middle-name="params.middleName"
+      v-model:subject="params.subject"
     />
 
     <ListSkeleton v-if="isLoading" />
