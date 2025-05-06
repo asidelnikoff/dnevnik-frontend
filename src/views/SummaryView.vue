@@ -67,7 +67,10 @@ async function getSummary() {
       v-if="isLoading"
       class="h-50 w-full"
     />
-    <SummaryTable v-else-if="Object.keys(summaryStore.summary).length > 0" />
+    <SummaryTable
+      v-else-if="Object.keys(summaryStore.summary).length > 0"
+      class="w-6/7"
+    />
     <div
       v-else
       class="text-center"
