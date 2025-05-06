@@ -6,7 +6,7 @@ import router from "@/router";
 const api = axios.create({
   baseURL: 'http://45.83.20.244:5509/api/v1',
   paramsSerializer: {
-    indexes: null
+    indexes: null,
   }
 });
 

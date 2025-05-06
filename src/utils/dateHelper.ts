@@ -30,7 +30,7 @@ export function transformApiDateToWeekDay(dateString: string) {
   const month = Number(parts[1])
   const day = Number(parts[2])
 
-  const date = new Date(year, month, day)
+  const date = new Date(year, month - 1, day)
   const weekDay = date.getDay()
 
   return `${dayNames[weekDay]} (${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')})`

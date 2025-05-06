@@ -17,6 +17,8 @@ defineProps({
 })
 
 const gradeColors: Record<string, string> = {
+  'н': 'bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300',
+  1: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
   2: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
   3: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
   4: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
@@ -34,7 +36,7 @@ const gradeColors: Record<string, string> = {
         {{ grade.grade }}
       </div>
     </HoverCardTrigger>
-    <HoverCardContent>
+    <HoverCardContent v-if="grade.comment">
       <p><i>Комментарий к оценке:</i></p>
       {{ grade.comment || '' }}
     </HoverCardContent>

@@ -51,18 +51,17 @@ const date = ref({
 //
 // Form select values
 //
-import { classSelectValues, endTimeSelectValues, startTimeSelectValues } from '@/utils/selectValues'
+import { classSelectValues, getEndTimeByStartTime, startTimeSelectValues, subjectSelectValues } from '@/utils/selectValues'
 import { daysSelectValues } from '@/utils/selectValues'
 import { getDateString } from '@/utils/dateHelper'
 //
 // Form schema and validations
 //
 const formSchema = toTypedSchema(z.object({
-  subject: z.string({ message: 'Введите предмет'}),
+  subject: z.string().default(subjectSelectValues[0].value),
   class: z.string().default(classSelectValues[0].value),
 
   start_time: z.string().default(startTimeSelectValues[0].value),
-  end_time: z.string().default(startTimeSelectValues[0].value),
 
   week_days: z.array(z.string()).nonempty({ message: 'Выберите дни недели'}).default([daysSelectValues[0].value]) as z.ZodTypeAny as z.ZodArray<z.ZodString>,
 
@@ -79,7 +78,6 @@ onBeforeMount(() => {
   if (data) {
     form.setFieldValue('class', data?.class)
     form.setFieldValue('start_time', data.start_time)
-    form.setFieldValue('end_time', data.end_time)
     form.setFieldValue('week_days', data.week_days)
   }
 })
@@ -93,6 +91,8 @@ const onSubmit = form.handleSubmit(async (values) => {
 
     start_date: transformToApiDate(date.value.start?.toDate(getLocalTimeZone()) as Date),
     end_date: transformToApiDate(date.value.end?.toDate(getLocalTimeZone()) as Date),
+
+    end_time: getEndTimeByStartTime(values.start_time)
   }
 
   try {
@@ -117,12 +117,26 @@ const onSubmit = form.handleSubmit(async (values) => {
       >
         <FormItem>
           <FormLabel><span>Предмет<sup>*</sup></span></FormLabel>
-          <FormControl>
-            <Input
-              type="text"
-              v-bind="componentField"
-            />
-          </FormControl>
+          <Select
+            v-bind="componentField"
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent class="max-h-48">
+              <SelectGroup>
+                <SelectItem
+                  v-for="{ value, label} in subjectSelectValues"
+                  :key="value"
+                  :value="value"
+                >
+                  {{ label }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -142,7 +156,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                 <SelectValue />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent class="max-h-48">
               <SelectGroup>
                 <SelectItem
                   v-for="{ value, label} in classSelectValues"
@@ -176,36 +190,6 @@ const onSubmit = form.handleSubmit(async (values) => {
               <SelectGroup>
                 <SelectItem
                   v-for="{ value, label} in startTimeSelectValues"
-                  :key="value"
-                  :value="value"
-                >
-                  {{ label }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-
-      <FormField
-        v-slot="{ componentField }"
-        name="end_time"
-      >
-        <FormItem>
-          <FormLabel><span>Время окончания<sup>*</sup></span></FormLabel>
-          <Select
-            v-bind="componentField"
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem
-                  v-for="{ value, label} in endTimeSelectValues"
                   :key="value"
                   :value="value"
                 >

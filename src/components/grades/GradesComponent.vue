@@ -9,14 +9,6 @@ import Input from '@/components/ui/input/Input.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 
 import {
-  NumberField,
-  NumberFieldContent,
-  NumberFieldDecrement,
-  NumberFieldIncrement,
-  NumberFieldInput,
-} from '@/components/ui/number-field'
-
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -34,10 +26,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import GradeItem from '../home/GradeItem.vue';
 import type { GetScheduleGradesResponse, GetScheduleResponse } from '@/api/services/scheduleService';
 import { getFullName } from '@/utils/getFullName';
 import { useScheduleStore } from '@/stores/schedule';
 import { useGradesStore } from '@/stores/grades';
+import { gradeSelectValues } from '@/utils/selectValues';
 
 const gradeItem = ref<GetScheduleGradesResponse[number]>()
 
@@ -89,7 +91,6 @@ onBeforeMount(() => {
 
 const scheduleStore = useScheduleStore()
 const gradesStore = useGradesStore()
-
 </script>
 
 <template>
@@ -97,10 +98,15 @@ const gradesStore = useGradesStore()
     <div
       v-for="(grade, gradeId) in gradeItem?.grades"
       :key="grade.grade + grade.comment"
-      class="flex items-center border rounded-md pl-4"
+      class="flex items-center border rounded-md pl-1"
     >
-      <span>{{ grade.grade }}</span>
-      <div class="ml-2">
+      <GradeItem
+        :grade="{
+          grade: grade.grade,
+          comment: ''
+        }"
+      />
+      <div>
         <Button
           type="button"
           variant="ghost"
@@ -188,24 +194,30 @@ const gradesStore = useGradesStore()
           </div>
 
           <div class="flex flex-1/2 flex-col gap-2">
-            <NumberField
-              v-model="newGrade.grade as number"
-              :default-value="5"
-              :min="2"
-              :max="5"
+            <Label for="date">Оценка</Label>
+            <Select
+              v-model="newGrade.grade"
             >
-              <Label>Оценка</Label>
-              <NumberFieldContent>
-                <NumberFieldDecrement />
-                <NumberFieldInput />
-                <NumberFieldIncrement />
-              </NumberFieldContent>
-            </NumberField>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem
+                    v-for="{ value, label} in gradeSelectValues"
+                    :key="value"
+                    :value="value"
+                  >
+                    {{ label }}
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         <div class="flex flex-1/2 flex-col gap-2">
-          <Label>Задание</Label>
+          <Label>Комментарий</Label>
           <Textarea
             v-model="newGrade.comment"
             class="resize-none break-all"
@@ -279,24 +291,30 @@ const gradesStore = useGradesStore()
           </div>
 
           <div class="flex flex-1/2 flex-col gap-2">
-            <NumberField
-              v-model="newGrade.grade as number"
-              :default-value="5"
-              :min="2"
-              :max="5"
+            <Label for="date">Оценка</Label>
+            <Select
+              v-model="newGrade.grade"
             >
-              <Label>Оценка</Label>
-              <NumberFieldContent>
-                <NumberFieldDecrement />
-                <NumberFieldInput />
-                <NumberFieldIncrement />
-              </NumberFieldContent>
-            </NumberField>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem
+                    v-for="{ value, label} in gradeSelectValues"
+                    :key="value"
+                    :value="value"
+                  >
+                    {{ label }}
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         <div class="flex flex-1/2 flex-col gap-2">
-          <Label>Задание</Label>
+          <Label>Комментарий</Label>
           <Textarea
             v-model="newGrade.comment"
             class="resize-none break-all"

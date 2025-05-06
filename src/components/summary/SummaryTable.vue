@@ -29,9 +29,11 @@ import type { ScheduleValue } from '@/api/types/shedule'
 import { toast } from 'vue-sonner'
 import { useRouter } from 'vue-router'
 import { getApiWeekDay } from '@/utils/selectValues'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 
+const authStore = useAuthStore()
 const summaryStore = useSummaryStore()
 
 const classes = computed(() => {
@@ -66,7 +68,6 @@ function createLesson(className: string, weekDay: string, time: string) {
     class: className,
     week_days: [getApiWeekDay(transformApiDateToWeekDay(weekDay).split('(')[0].trim())],
     start_time: time.split('-')[0].trim() + ':00',
-    end_time: time.split('-')[1].trim() + ':00',
   })
   router.push({ name: 'createLesson '})
 }
@@ -75,7 +76,7 @@ function createLesson(className: string, weekDay: string, time: string) {
   <div class="flex overflow-auto max-h-170 [&_tr:hover]:bg-inherit [&_td:hover]:bg-inherit">
     <div>
       <Table>
-        <TableHeader>
+        <TableHeader class="sticky">
           <TableRow>
             <TableHead class="text-center border-r-1">
               День недели
@@ -153,7 +154,7 @@ function createLesson(className: string, weekDay: string, time: string) {
                 <TableCell class="text-left">
                   {{ getFullName(lesson.value.teacher) }}
                 </TableCell>
-                <TableCell>
+                <TableCell v-if="authStore.isHeadteacher">
                   <AlertDialog>
                     <AlertDialogTrigger>
                       <Button
@@ -194,6 +195,7 @@ function createLesson(className: string, weekDay: string, time: string) {
                 colspan="3"
               >
                 <div
+                  v-if="authStore.isHeadteacher"
                   class="flex justify-center items-center w-full"
                 >
                   <div class="w-fit">
@@ -207,11 +209,18 @@ function createLesson(className: string, weekDay: string, time: string) {
                     </RouterLink>
                   </div>
                 </div>
+                <div
+                  v-else
+                  class="text-center"
+                >
+                  -
+                </div>
               </TableCell>
             </TableRow>
           </template>
         </TableBody>
       </Table> 
     </div>
+    <div />
   </div>
 </template>

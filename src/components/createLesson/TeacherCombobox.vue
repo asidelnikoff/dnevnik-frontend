@@ -50,7 +50,7 @@ const stuffSelectValues = computed(() => {
       </div>
     </ComboboxAnchor>
 
-    <ComboboxList class="w-full">
+    <ComboboxList style="width: var(--reka-popper-anchor-width)">
       <ComboboxEmpty>
         Учителя не найдены
       </ComboboxEmpty>
@@ -60,6 +60,7 @@ const stuffSelectValues = computed(() => {
           v-for="teacher in stuffSelectValues"
           :key="teacher.value"
           :value="teacher"
+          class="cursor-pointer"
           @select="() => {
             $emit('change', teacher.value)
           }"

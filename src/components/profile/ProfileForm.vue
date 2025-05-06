@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { useAuthStore } from '@/stores/auth'
 import { toast } from 'vue-sonner'
 import { ref } from 'vue'
+import PasswordInput from '../common/PasswordInput.vue'
 //
 // Form schema and validation
 //
@@ -118,10 +119,7 @@ const onSubmit = form.handleSubmit(async (values) => {
       <FormItem>
         <FormLabel><span>Текущий пароль<sup>*</sup></span></FormLabel>
         <FormControl>
-          <Input
-            type="password"
-            v-bind="componentField"
-          />
+          <PasswordInput v-bind="componentField" />
         </FormControl>
         <FormMessage />
       </FormItem>
@@ -152,10 +150,7 @@ const onSubmit = form.handleSubmit(async (values) => {
           <FormItem>
             <FormLabel><span>Новый пароль<sup>*</sup></span></FormLabel>
             <FormControl>
-              <Input
-                type="password"
-                v-bind="componentField"
-              />
+              <PasswordInput v-bind="componentField" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -171,10 +166,7 @@ const onSubmit = form.handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Повтор пароля</FormLabel>
             <FormControl>
-              <Input
-                type="password"
-                v-bind="componentField"
-              />
+              <PasswordInput v-bind="componentField" />
             </FormControl>
             <FormMessage />
           </FormItem>

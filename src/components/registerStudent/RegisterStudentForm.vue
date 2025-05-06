@@ -30,6 +30,7 @@ import { toast } from 'vue-sonner'
 //
 import { classSelectValues } from '@/utils/selectValues'
 import { generateLogin, generatePassword } from '@/utils/generateRegisterData'
+import PasswordInput from '../common/PasswordInput.vue'
 //
 // Form schema and validations
 //
@@ -156,8 +157,8 @@ const onSubmit = form.handleSubmit(async (values) => {
         <FormItem>
           <FormLabel><span>Отчество<sup>*</sup></span></FormLabel>
           <FormControl>
-            <Input
-              type="text"
+            <PasswordInput
+              is-visible-by-default
               v-bind="componentField"
             />
           </FormControl>

@@ -20,6 +20,7 @@ const route = useRoute()
 * {
   overflow: hidden;
 }
+
 .theme-changer {
   top: 20px;
   right: 20px;

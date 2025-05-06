@@ -76,7 +76,7 @@ const classes = defineModel<string[]>('classes', { required: true })
               <SelectValue placeholder="Все" />
             </SelectTrigger>
           </FormControl>
-          <SelectContent>
+          <SelectContent class="max-h-48">
             <SelectGroup>
               <SelectItem
                 v-for="{ value, label} in classSelectValues"

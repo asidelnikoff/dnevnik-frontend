@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import { toast } from 'vue-sonner'
 import { ref } from 'vue'
+import PasswordInput from '../common/PasswordInput.vue'
 //
 // Form schema and validations
 //
@@ -82,10 +83,7 @@ const onSubmit = form.handleSubmit(async (values) => {
       <FormItem>
         <FormLabel>Пароль</FormLabel>
         <FormControl>
-          <Input
-            type="password"
-            v-bind="componentField"
-          />
+          <PasswordInput v-bind="componentField" />
         </FormControl>
         <FormMessage />
       </FormItem>
