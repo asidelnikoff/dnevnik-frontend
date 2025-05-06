@@ -55,7 +55,7 @@ const props = defineProps({
 })
 
 const newGrade = ref<Grade>({
-  grade: 5,
+  grade: '5',
   comment: ''
 })
 
