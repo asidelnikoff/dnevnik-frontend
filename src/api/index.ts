@@ -8,7 +8,6 @@ const api = axios.create({
   paramsSerializer: {
     indexes: null,
   },
-  withCredentials: true,
 });
 
 // Send token with every request
