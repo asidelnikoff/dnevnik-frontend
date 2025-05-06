@@ -10,12 +10,16 @@ import { Button } from '@/components/ui/button'
 
 import StudentsFilters from '@/components/students/StudentsFilters.vue';
 import StudentsTable from '@/components/students/StudentsTable.vue';
-
+import { toast } from 'vue-sonner';
+import ListSkeleton from '@/components/common/ListSkeleton.vue';
 
 const authStore = useAuthStore()
 
 const params = ref<GetStudentsParams>({
-  search: '',
+  firstName: '',
+  lastName: '',
+  middleName: '',
+  class: '',
 })
 watch(params, () => {
   getStudents();
@@ -24,8 +28,16 @@ watch(params, () => {
 })
 
 const studentsStore = useStudentsStore()
-function getStudents() {
-  studentsStore.getStudents(params.value)
+
+const isLoading = ref(false)
+async function getStudents() {
+  isLoading.value = true
+  try {
+    await studentsStore.getStudents(params.value)
+  } catch {
+    toast('Не удалось получить список учеников')
+  }
+  isLoading.value = false
 }
 
 onBeforeMount(() => {
@@ -34,11 +46,22 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="w-5/10">
-    <StudentsFilters v-model:search="params.search" />
-    <StudentsTable :students="studentsStore.students" />
+  <div class="min-w-6/10">
+    <StudentsFilters
+      v-model:first-name="params.firstName"
+      v-model:last-name="params.lastName"
+      v-model:middle-name="params.middleName"
+      v-model:class-name="params.class"
+    />
+
+    <ListSkeleton v-if="isLoading" />
+    <StudentsTable
+      v-else
+      :students="studentsStore.students"
+    />
+
     <div
-      v-if="true"
+      v-if="authStore.isHeadteacher"
       class="w-fit mt-3 ml-auto"
     >
       <RouterLink :to="{name: 'registerStudent'}">

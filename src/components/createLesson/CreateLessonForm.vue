@@ -6,6 +6,7 @@ import { toast } from 'vue-sonner'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
+import { transformToApiDate } from '@/utils/tranformToApiDate'
 
 import TeacherCombobox from './TeacherCombobox.vue'
 
@@ -25,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import Input from '@/components/ui/input/Input.vue'
 //
 // Date
 //
@@ -39,62 +39,68 @@ import {
   getLocalTimeZone,
 } from '@internationalized/date'
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
-import { type Ref, ref } from 'vue'
+import { onBeforeMount, type Ref, ref } from 'vue'
 import { useSummaryStore } from '@/stores/summary'
 
 const today = new Date(Date.now())
 const date = ref({
-  start: new CalendarDate(today.getFullYear(), today.getMonth(), today.getDate()),
-  end: new CalendarDate(today.getFullYear(), today.getMonth(), today.getDate()).add({ days: 1 }),
+  start: new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate()),
+  end: new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate()).add({ days: 1 }),
 }) as Ref<DateRange>
 //
 // Form select values
 //
-import { classSelectValues } from '@/utils/selectValues'
+import { classSelectValues, getEndTimeByStartTime, startTimeSelectValues, subjectSelectValues } from '@/utils/selectValues'
 import { daysSelectValues } from '@/utils/selectValues'
 import { getDateString } from '@/utils/dateHelper'
 //
 // Form schema and validations
 //
 const formSchema = toTypedSchema(z.object({
-  subject: z.string({ message: 'Введите предмет'}),
+  subject: z.string().default(subjectSelectValues[0].value),
   class: z.string().default(classSelectValues[0].value),
 
-  startTime: z.preprocess(input => `${input}:00`, z.string({message: 'Введите время'}).time({ precision: 0, message: 'Формат - 23:59'})),
-  endTime: z.preprocess(input => `${input}:00`, z.string({message: 'Введите время'}).time({ precision: 0, message: 'Формат - 23:59'})),
+  start_time: z.string().default(startTimeSelectValues[0].value),
 
-  weekDays: z.string().array().nonempty({ message: 'Выберите дни недели'}).default([daysSelectValues[0].value]),
+  week_days: z.array(z.string()).nonempty({ message: 'Выберите дни недели'}).default([daysSelectValues[0].value]) as z.ZodTypeAny as z.ZodArray<z.ZodString>,
 
-  teacherId: z.string({ message: 'Выберите учителя'}),
+  teacher_id: z.string({ message: 'Выберите учителя'}),
 }))
 const form = useForm({
   validationSchema: formSchema,
   keepValuesOnUnmount: true,
 })
+
+onBeforeMount(() => {
+  const data = summaryStore.getNewLessonData()
+
+  if (data) {
+    form.setFieldValue('class', data?.class)
+    form.setFieldValue('start_time', data.start_time)
+    form.setFieldValue('week_days', data.week_days)
+  }
+})
 //
 // Submit action
 //
 const summaryStore = useSummaryStore()
-const onSubmit = form.handleSubmit((values) => {
+const onSubmit = form.handleSubmit(async (values) => {
   const params = {
     ...values,
 
-    // Slice off seconds and ':' character
-    startTime: values.startTime.slice(0, -3),
-    endTime: values.endTime.slice(0, -3),
+    start_date: transformToApiDate(date.value.start?.toDate(getLocalTimeZone()) as Date),
+    end_date: transformToApiDate(date.value.end?.toDate(getLocalTimeZone()) as Date),
 
-    startDate: getDateString(date.value.start?.toDate(getLocalTimeZone()) as Date),
-    endDate: getDateString(date.value.end?.toDate(getLocalTimeZone()) as Date),
-
-    teacherId: values.teacherId,
+    end_time: getEndTimeByStartTime(values.start_time)
   }
-  const response = summaryStore.createSchedule(params)
-  if (response.status === 200) {
+
+  try {
+    await summaryStore.createLesson(params)
     toast('Урок успешно создан')
     router.push({ name: 'summary' })
-    return
+  } catch {
+    toast('Не удалось создать урок')
   }
-  toast('Не удалось создать урок')
 })
 </script>
 
@@ -110,12 +116,26 @@ const onSubmit = form.handleSubmit((values) => {
       >
         <FormItem>
           <FormLabel><span>Предмет<sup>*</sup></span></FormLabel>
-          <FormControl>
-            <Input
-              type="text"
-              v-bind="componentField"
-            />
-          </FormControl>
+          <Select
+            v-bind="componentField"
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent class="max-h-48">
+              <SelectGroup>
+                <SelectItem
+                  v-for="{ value, label} in subjectSelectValues"
+                  :key="value"
+                  :value="value"
+                >
+                  {{ label }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -135,7 +155,7 @@ const onSubmit = form.handleSubmit((values) => {
                 <SelectValue />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent class="max-h-48">
               <SelectGroup>
                 <SelectItem
                   v-for="{ value, label} in classSelectValues"
@@ -153,32 +173,30 @@ const onSubmit = form.handleSubmit((values) => {
 
       <FormField
         v-slot="{ componentField }"
-        name="startTime"
+        name="start_time"
       >
         <FormItem>
           <FormLabel><span>Время начала<sup>*</sup></span></FormLabel>
-          <FormControl>
-            <Input
-              type="text"
-              v-bind="componentField"
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-
-      <FormField
-        v-slot="{ componentField }"
-        name="endTime"
-      >
-        <FormItem>
-          <FormLabel><span>Время окончания<sup>*</sup></span></FormLabel>
-          <FormControl>
-            <Input
-              type="text"
-              v-bind="componentField"
-            />
-          </FormControl>
+          <Select
+            v-bind="componentField"
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem
+                  v-for="{ value, label} in startTimeSelectValues"
+                  :key="value"
+                  :value="value"
+                >
+                  {{ label }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -187,10 +205,10 @@ const onSubmit = form.handleSubmit((values) => {
     <div class="flex items-center gap-5">
       <FormField
         v-slot="{ componentField }"
-        name="weekDays"
+        name="week_days"
       >
         <FormItem>
-          <FormLabel><span>День недели<sup>*</sup></span></FormLabel>
+          <FormLabel><span>Дни недели<sup>*</sup></span></FormLabel>
 
           <Select
             multiple
@@ -217,7 +235,7 @@ const onSubmit = form.handleSubmit((values) => {
         </FormItem>
       </FormField>
 
-      <FormField name="dob">
+      <FormField name="date">
         <FormItem class="flex flex-col">
           <FormLabel>Дата*</FormLabel>
           <Popover>
@@ -240,7 +258,7 @@ const onSubmit = form.handleSubmit((values) => {
                   </template>
                 </template>
                 <template v-else>
-                  Ввыберите дату
+                  Выберите дату
                 </template>
               </Button>
             </PopoverTrigger>
@@ -257,9 +275,9 @@ const onSubmit = form.handleSubmit((values) => {
       </FormField>
     </div>
 
-    <FormField name="teacherId">
+    <FormField name="teacher_id">
       <FormItem>
-        <TeacherCombobox @change="(value: string) => form.setFieldValue('teacherId', value)" />
+        <TeacherCombobox @change="(value: string) => form.setFieldValue('teacher_id', value)" />
         <FormMessage />
       </FormItem>
     </FormField>

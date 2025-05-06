@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 import { onBeforeMount, ref, watch } from 'vue';
 
+
 import { useAuthStore } from '@/stores/auth';
 import { useStuffStore } from '@/stores/stuff';
 
@@ -10,11 +11,16 @@ import { Button } from '@/components/ui/button'
 
 import StuffFilters from '@/components/stuff/StuffFilters.vue';
 import StuffTable from '@/components/stuff/StuffTable.vue';
+import { toast } from 'vue-sonner';
+import ListSkeleton from '@/components/common/ListSkeleton.vue';
 
 const authStore = useAuthStore()
 
 const params = ref<GetStuffParams>({
-  search: '',
+  firstName: '',
+  lastName: '',
+  middleName: '',
+  subject: ''
 })
 watch(params, () => {
   getStuff();
@@ -23,8 +29,15 @@ watch(params, () => {
 })
 
 const stuffStore = useStuffStore()
-function getStuff() {
-  stuffStore.getStuff(params.value)
+const isLoading = ref(false)
+async function getStuff() {
+  isLoading.value = true
+  try {
+    await stuffStore.getStuff(params.value)
+  } catch {
+    toast('Не удалось получить список сотрудников')
+  }
+  isLoading.value = false
 }
 
 onBeforeMount(() => {
@@ -33,16 +46,26 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="w-5/10">
-    <StuffFilters v-model:search="params.search" />
-    <StuffTable :stuff="stuffStore.stuff" />
+  <div class="min-w-6/10">
+    <StuffFilters
+      v-model:first-name="params.firstName"
+      v-model:last-name="params.lastName"
+      v-model:middle-name="params.middleName"
+      v-model:subject="params.subject"
+    />
+
+    <ListSkeleton v-if="isLoading" />
+    <StuffTable
+      v-else
+      :stuff="stuffStore.stuff"
+    />
+
     <div
-      v-if="true"
+      v-if="authStore.isHeadteacher"
       class="w-fit mt-3 ml-auto"
     >
       <RouterLink :to="{name: 'registerStuff'}">
         <Button
-          v-if="authStore.isHeadteacher"
           variant="outline"
         >
           Добавить учителя

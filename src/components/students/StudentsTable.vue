@@ -1,9 +1,6 @@
 <script setup lang='ts'>
 import type { PropType } from 'vue';
 
-import { getFullName } from '@/utils/getFullName'
-
-import type { Student } from '@/api/types/users';
 import Button from '@/components/ui/button/Button.vue';
 import { Trash2 } from 'lucide-vue-next';
 
@@ -27,20 +24,38 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
 import { useStudentsStore } from '@/stores/students';
 import { useAuthStore } from '@/stores/auth';
+import type { GetStudentsResponse } from '@/api/services/usersService';
+import { toast } from 'vue-sonner';
 
 const studentsStore = useStudentsStore()
 const authStore = useAuthStore()
 defineProps({
   students: {
-    type: Array as PropType<Student[]>,
+    type: Array as PropType<GetStudentsResponse>,
     required: true,
   }
 })
+
+async function deleteStudent(id: string): Promise<void> {
+  try {
+    await studentsStore.deleteStudent(id)
+    toast('Ученик успешно удален')
+  } catch {
+    toast('Не удалось удалить ученика')
+  }
+}
 </script>
 <template>
-  <Table>
+  <div
+    v-if="students.length === 0"
+    class="mt-1 text-center"
+  >
+    Ученики отсутствуют
+  </div>
+  <Table v-else>
     <TableHeader class="w-full">
       <TableRow>
         <TableHead>#</TableHead>
@@ -49,13 +64,16 @@ defineProps({
       </TableRow>
     </TableHeader>
 
-    <TableBody class="w-full">
+    <TableBody
+      class="w-full"
+    >
       <TableRow
-        v-for="student in students"
+        v-for="(student, id) in students"
         :key="student.id"
+        class="h-12"
       >
-        <TableCell> {{ student.id }} </TableCell>
-        <TableCell>{{ getFullName(student) }}</TableCell>
+        <TableCell> {{ id + 1 }} </TableCell>
+        <TableCell>{{ student.full_name }}</TableCell>
         <TableCell>{{ student.class }}</TableCell>
         <TableCell
           v-if="authStore.isHeadteacher"
@@ -78,14 +96,14 @@ defineProps({
                 <AlertDialogDescription>
                   <div>Вы действительно хотите <b>удалить</b> ученика?</div>
                   <br>
-                  <div><b>ФИО: </b>{{ getFullName(student) }}</div>
+                  <div><b>ФИО: </b>{{ student.full_name }}</div>
                   <div><b>Класс: </b>{{ student.class }}</div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Отмена</AlertDialogCancel>
                 <AlertDialogAction
-                  @click="studentsStore.deleteStudent({id: student.id})"
+                  @click="deleteStudent(student.id)"
                 >
                   Удалить
                 </AlertDialogAction>

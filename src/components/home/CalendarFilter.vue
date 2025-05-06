@@ -1,19 +1,8 @@
 <script setup lang='ts'>
 import { Calendar } from '@/components/ui/calendar'
-import { useScheduleStore } from '@/stores/schedule'
-import { getDateString } from '@/utils/dateHelper'
-import { type DateValue, getLocalTimeZone, today } from '@internationalized/date'
-import { type Ref, ref, watch } from 'vue'
+import { type DateValue } from '@internationalized/date'
 
-const date = ref(today(getLocalTimeZone())) as Ref<DateValue>
-
-const scheduleStore = useScheduleStore()
-watch(date, () => {
-  const formattedDate = getDateString(date.value.toDate(getLocalTimeZone()) as Date)
-  scheduleStore.getSchedule({
-    date: formattedDate,
-  })
-})
+const date = defineModel<DateValue>('date')
 </script>
 
 <template>

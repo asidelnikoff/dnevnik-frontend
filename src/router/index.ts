@@ -55,7 +55,7 @@ const router = createRouter({
       meta: { layout: MainLayout }
     },
     {
-      path: '/grades',
+      path: '/grades/:id',
       name: 'grades',
       component: GradesView,
       meta: { layout: MainLayout },
@@ -87,12 +87,12 @@ const router = createRouter({
   ],
 })
 
-const privateRoutes = ['home', 'students', 'stuff', 'summary', 'profile']
+const privateRoutes = ['home', 'students', 'grades', 'stuff', 'summary', 'profile']
 
 router.beforeEach((to) => {
   const authStore = useAuthStore()
 
-  if ( to.name === 'login' ) {
+  if ( to.name === 'login') {
     authStore.logout()
   }
 

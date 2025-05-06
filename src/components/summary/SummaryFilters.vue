@@ -1,36 +1,36 @@
 <script setup lang='ts'>
 import { Label } from '@/components/ui/label'
-import Input from '@/components/ui/input/Input.vue'
 
 import { Funnel } from 'lucide-vue-next'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
-  today,
-  getLocalTimeZone,
-  type DateValue,
-} from '@internationalized/date'
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { RangeCalendar } from '@/components/ui/range-calendar'
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
-import { ref, type Ref } from 'vue'
 import { getDateString } from '@/utils/dateHelper'
+import type { DateRange } from 'reka-ui'
+import { getLocalTimeZone } from '@internationalized/date'
+import { classSelectValues } from '@/utils/selectValues'
 
-const startTime = ref<string>('8:00')
-
-const date = ref(today(getLocalTimeZone())) as Ref<DateValue>
+const date = defineModel<DateRange>('date', { required: true })
+const classes = defineModel<string[]>('classes', { required: true })
 </script>
 
 <template>
   <div class="flex justify-between items-center">
     <div class="flex gap-3 w-full max-w-sm mb-3">
       <div class="flex flex-col gap-1">
-        <Label
-          class="mb-1"
-          for="date"
-        >Дата</Label>
+        <Label>Дата</Label>
         <Popover>
           <PopoverTrigger as-child>
             <Button
@@ -41,26 +41,53 @@ const date = ref(today(getLocalTimeZone())) as Ref<DateValue>
               )"
             >
               <CalendarIcon class="mr-2 h-4 w-4" />
-              {{ date ? getDateString(date.toDate(getLocalTimeZone())) : "Выберите дату" }}
+              <template v-if="date.start">
+                <template v-if="date.end">
+                  {{ getDateString(date.start.toDate(getLocalTimeZone())) }} - {{ getDateString(date.end.toDate(getLocalTimeZone())) }}
+                </template>
+
+                <template v-else>
+                  {{ getDateString(date.start.toDate(getLocalTimeZone())) }}
+                </template>
+              </template>
+              <template v-else>
+                Выберите дату
+              </template>
             </Button>
           </PopoverTrigger>
           <PopoverContent class="w-auto p-0">
-            <Calendar
+            <RangeCalendar
               v-model="date"
               locale="ru"
-              initial-focus
+              :number-of-months="2"
+              @update:start-value="(startDate) => date.start = startDate"
             />
           </PopoverContent>
         </Popover>
       </div>
       <div class="flex flex-col gap-1">
-        <Label
-          class="mb-1"
-          for="search"
-        >Время начала</Label>
-        <Input 
-          :model-value="startTime" 
-        />
+        <Label>Классы</Label>
+        <Select
+          v-model="classes"
+          multiple
+        >
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Все" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent class="max-h-48">
+            <SelectGroup>
+              <SelectItem
+                v-for="{ value, label} in classSelectValues"
+                :key="value"
+                :value="value"
+              >
+                {{ label }}
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
     </div>
     <Button

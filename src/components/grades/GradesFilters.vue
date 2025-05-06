@@ -4,19 +4,22 @@ import { Input } from '@/components/ui/input'
 //
 // Form select values
 //
-import type { ScheduleExtended } from '@/api/types/shedule'
-import { type PropType } from 'vue'
-import { useScheduleStore } from '@/stores/schedule'
+import { ref, type PropType } from 'vue'
 import { Search } from 'lucide-vue-next'
+import type { GetScheduleResponse } from '@/api/services/scheduleService'
+import { useScheduleStore } from '@/stores/schedule'
 //
 // Form schema and validations
 //
 const scheduleStore = useScheduleStore()
+
+const nameFilter = ref<string>('')
+defineEmits(['input'])
 defineProps({
-  gradeItem: {
-    type: Object as PropType<ScheduleExtended>,
+  scheduleItem: {
+    type: Object as PropType<GetScheduleResponse[number]>,
     required: true,
-  }
+  },
 })
 </script>
 
@@ -29,7 +32,7 @@ defineProps({
         <Label>Урок</Label>
         <Input
           type="text"
-          :model-value="gradeItem.subject"
+          :model-value="scheduleItem.subject"
           disabled
         />
       </div>
@@ -38,7 +41,7 @@ defineProps({
         <Label>Дата</Label>
         <Input
           type="text"
-          :model-value="scheduleStore.date"
+          :model-value="scheduleStore.getDate"
           disabled
         />
       </div>
@@ -47,7 +50,7 @@ defineProps({
         <Label>Класс</Label>
         <Input
           type="text"
-          :model-value="gradeItem.class"
+          :model-value="scheduleItem.class"
           disabled
         />
       </div>
@@ -59,6 +62,11 @@ defineProps({
         <Input
           class="border-none pl-10"
           placeholder="Введите ФИО"
+          :model-value="nameFilter"
+          @update:model-value="(value) => {
+            nameFilter = String(value);
+            $emit('input', nameFilter)
+          }"
         />
         <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
           <Search class="size-4 text-muted-foreground" />
